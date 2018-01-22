@@ -22,8 +22,13 @@ public class VideoMarketAnalysisTopN {
 
     private static final String FILE_PATH = "E:\\";
 
-    public static void main(String[] args) {
+    private static final Integer TOP_NUM = 10;
 
+
+    private static final Integer PALY_NUM_LOC = 10;
+    private static final Integer TALK_NUM_LOC = 7;
+
+    public static void main(String[] args) {
         final JavaSparkContext sc = new JavaSparkContext(
                 new SparkConf().setAppName("VideoMarketAnalysisTopN").setMaster("local"));
 
@@ -33,7 +38,7 @@ public class VideoMarketAnalysisTopN {
             @Override
             public Boolean call(String v1) throws Exception {
                 String[] split = v1.split(SPLIT_LABLE);
-                if (split.length == 11) {
+                if (split.length == PALY_NUM_LOC + 1) {
                     return true;
                 } else {
                     return false;
@@ -41,21 +46,40 @@ public class VideoMarketAnalysisTopN {
             }
         });
 
-        JavaPairRDD<Long, String> unSortedRDD = filterRDD.mapToPair(new PairFunction<String, Long, String>() {
+
+        /***************************播放量排名*******************************/
+        JavaPairRDD<Long, String> palyNumRDD = filterRDD.mapToPair(new PairFunction<String, Long, String>() {
 
             @Override
             public Tuple2<Long, String> call(String s) throws Exception {
                 String[] split = s.split(SPLIT_LABLE);
-                Long playNum = Long.valueOf(split[10]);
+                Long playNum = Long.valueOf(split[PALY_NUM_LOC]);
                 return new Tuple2<>(playNum, s);
             }
         });
+        List<Tuple2<Long, String>> playNumTop = palyNumRDD.sortByKey(false).take(TOP_NUM);
+//        for (Tuple2<Long, String> tuple2 : playNumTop) {
+//            System.out.println(tuple2._1 + ":" + tuple2._2);
+//        }
+        // todo 持久化及格式
+        /***************************播放量排名*******************************/
+        JavaPairRDD<Long, String> commentNumRDD = filterRDD.mapToPair(new PairFunction<String, Long, String>() {
+            @Override
+            public Tuple2<Long, String> call(String s) throws Exception {
+                String[] split = s.split(SPLIT_LABLE);
+                Long commentNum = Double.valueOf(split[TALK_NUM_LOC]).longValue();
+                return new Tuple2<>(commentNum, s);
+            }
+        });
+        List<Tuple2<Long, String>> commentNumTop = commentNumRDD.sortByKey(false).take(TOP_NUM);
 
-        List<Tuple2<Long, String>> top5 = unSortedRDD.sortByKey(false).take(5);
+//        for (Tuple2<Long, String> tuple2 : commentNumTop) {
+//            System.out.println(tuple2._1 + ":" + tuple2._2);
+//        }
+        // todo 持久化及格式
+        /***************************评论量排名*******************************/
 
-        for (Tuple2<Long, String> tuple2 : top5) {
-            System.out.println(tuple2._1 + ":" + tuple2._2);
-        }
+
         sc.close();
     }
 }
