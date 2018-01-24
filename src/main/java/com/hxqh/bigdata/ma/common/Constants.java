@@ -5,6 +5,24 @@ package com.hxqh.bigdata.ma.common;
  */
 public interface Constants {
 
+    /**
+     * Linux
+     */
+    String SPLIT_LABLE = "\\^";
+    String FILE_PATH = "hdfs://spark1:9000/videos/";
+    String FILE_SPLIT = "/";
+
+
+//    /**
+//     * Windows
+//     */
+//    String SPLIT_LABLE = "\\^";
+//    String FILE_PATH = "E:\\";
+//    String FILE_SPLIT = "\\";
+
+    /**
+     * 影视类别
+     */
     String CATEGORY_MANDARIN = "国语";
     String CATEGORY_LOVE = "爱情";
     String CATEGORY_COMEDY = "喜剧";

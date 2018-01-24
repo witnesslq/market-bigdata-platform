@@ -20,9 +20,6 @@ import java.util.Map;
  */
 public class VideoMarketAnalysisCategory {
 
-    private static final String SPLIT_LABLE = "\\^";
-
-    private static final String FILE_PATH = "E:\\";
 
     private static Integer VAL = 5;
 
@@ -35,13 +32,13 @@ public class VideoMarketAnalysisCategory {
         final Accumulator<String> categoryAccumulator = sc.accumulator("", new CategoryAccumulator());
 
 
-        String filePath = FILE_PATH + DateUtils.getTodayDate();
+        String filePath = Constants.FILE_PATH + DateUtils.getTodayDate();
         JavaRDD<String> stringJavaRDD = sc.textFile(filePath);
 
         JavaRDD<String> commonRDD = stringJavaRDD.filter(new Function<String, Boolean>() {
             @Override
             public Boolean call(String v1) throws Exception {
-                String[] split = v1.split(SPLIT_LABLE);
+                String[] split = v1.split(Constants.SPLIT_LABLE);
                 if (split.length >= VAL) {
                     accumulator(categoryAccumulator, split[VAL]);
                     return true;
@@ -55,7 +52,7 @@ public class VideoMarketAnalysisCategory {
         JavaRDD<String> categoryRDD = commonRDD.flatMap(new FlatMapFunction<String, String>() {
             @Override
             public Iterable<String> call(String s) throws Exception {
-                String[] split = s.split(SPLIT_LABLE);
+                String[] split = s.split(Constants.SPLIT_LABLE);
                 String[] categoryLabel = split[VAL].split(" ");
                 return Arrays.asList(categoryLabel);
             }
