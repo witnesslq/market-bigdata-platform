@@ -17,6 +17,8 @@ import java.util.Map;
  * 各分类占比
  * <p>
  * Created by Ocean lin on 2018/1/12.
+ *
+ * @author Lin
  */
 public class VideoMarketAnalysisCategory {
 
@@ -33,7 +35,9 @@ public class VideoMarketAnalysisCategory {
 
 
         String filePath = Constants.FILE_PATH + DateUtils.getTodayDate();
-        JavaRDD<String> stringJavaRDD = sc.textFile(filePath);
+//        JavaRDD<String> stringJavaRDD = sc.textFile(filePath);
+        JavaRDD<String> stringJavaRDD = sc.textFile("D:\\spark\\company\\2018-02-26-iqiyi");
+
 
         JavaRDD<String> commonRDD = stringJavaRDD.filter(new Function<String, Boolean>() {
             @Override
