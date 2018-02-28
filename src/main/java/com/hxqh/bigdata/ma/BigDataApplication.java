@@ -1,8 +1,10 @@
 package com.hxqh.bigdata.ma;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -12,13 +14,17 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Ocean Lin
  */
 @SpringBootApplication
+@EnableAutoConfiguration
 @ComponentScan(basePackages = "com.hxqh.bigdata.ma.**.*")
-@RestController
-@EnableScheduling
-public class BigDataApplication extends SpringBootServletInitializer {
+public class BigDataApplication extends SpringBootServletInitializer implements EmbeddedServletContainerCustomizer {
 
     public static void main(String[] args) {
         SpringApplication.run(BigDataApplication.class, args);
+    }
+
+    @Override
+    public void customize(ConfigurableEmbeddedServletContainer container) {
+        container.setPort(8111);
     }
 
     /**
@@ -31,9 +37,9 @@ public class BigDataApplication extends SpringBootServletInitializer {
      *
      * @return
      */
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-        return builder.sources(BigDataApplication.class);
-    }
+//    @Override
+//    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+//        return builder.sources(BigDataApplication.class);
+//    }
 
 }
