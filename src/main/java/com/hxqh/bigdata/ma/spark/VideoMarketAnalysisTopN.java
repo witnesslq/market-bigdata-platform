@@ -1,13 +1,11 @@
 package com.hxqh.bigdata.ma.spark;
 
-import com.hxqh.bigdata.ma.common.Constants;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.PairFunction;
-import org.apache.spark.sql.DataFrame;
+import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
 import scala.Tuple2;
@@ -41,7 +39,7 @@ public class VideoMarketAnalysisTopN {
 //                Constants.FILE_SPLIT + DateUtils.getTodayMonth() + Constants.FILE_SPLIT;
 //        JavaRDD<String> stringJavaRDD = sc.textFile();
 
-        DataFrame df = sqlContext.read().format("org.elasticsearch.spark.sql").load("market_analysis/videos");
+        Dataset df = sqlContext.read().format("org.elasticsearch.spark.sql").load("market_analysis/videos");
         JavaRDD<Row> rowJavaRDD = df.toJavaRDD();
 
         // iqiyi^灵魂载体^崔航 苗诗钰 萨钢云 李未东 叶沛霖^吴焱晨^film^华语 惊悚 悬疑^6.7^298.0^73^2018-01-23^578000

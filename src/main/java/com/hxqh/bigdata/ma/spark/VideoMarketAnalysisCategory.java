@@ -3,14 +3,15 @@ package com.hxqh.bigdata.ma.spark;
 import com.hxqh.bigdata.ma.common.Constants;
 import com.hxqh.bigdata.ma.util.DateUtils;
 import org.apache.spark.Accumulator;
-import org.apache.spark.SparkConf;
+import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.Function;
+import org.apache.spark.sql.SparkSession;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -22,22 +23,23 @@ import java.util.Map;
  */
 public class VideoMarketAnalysisCategory {
 
-
     private static Integer VAL = 5;
 
     public static void main(String[] args) {
 
-        final JavaSparkContext sc = new JavaSparkContext(
-                new SparkConf().setAppName("VideoMarketAnalysisCategory").setMaster("local"));
+        SparkSession spark = SparkSession
+                .builder()
+                .appName("VideoMarketAnalysisCategory")
+                .master("local")
+                .config("spark.sql.warehouse.dir", "D:\\spark\\company")
+                .getOrCreate();
 
+        SparkContext sc = spark.sparkContext();
         // 使用自定义计数器
         final Accumulator<String> categoryAccumulator = sc.accumulator("", new CategoryAccumulator());
 
-
         String filePath = Constants.FILE_PATH + DateUtils.getTodayDate();
-//        JavaRDD<String> stringJavaRDD = sc.textFile(filePath);
-        JavaRDD<String> stringJavaRDD = sc.textFile("D:\\spark\\company\\2018-02-26-iqiyi");
-
+        JavaRDD<String> stringJavaRDD = sc.textFile("D:\\spark\\company\\2018-02-26-iqiyi", 2).toJavaRDD();
 
         JavaRDD<String> commonRDD = stringJavaRDD.filter(new Function<String, Boolean>() {
             @Override
@@ -52,25 +54,19 @@ public class VideoMarketAnalysisCategory {
             }
         });
 
-
         JavaRDD<String> categoryRDD = commonRDD.flatMap(new FlatMapFunction<String, String>() {
             @Override
-            public Iterable<String> call(String s) throws Exception {
+            public Iterator<String> call(String s) throws Exception {
                 String[] split = s.split(Constants.SPLIT_LABLE);
                 String[] categoryLabel = split[VAL].split(" ");
-                return Arrays.asList(categoryLabel);
+                return Arrays.asList(categoryLabel).iterator();
             }
         });
 
         JavaRDD<String> category = categoryRDD.distinct();
         category.count();
 
-
         System.out.println(categoryAccumulator.value());
-        // todo 持久化规则
-
-
-        sc.close();
     }
 
     private static void accumulator(Accumulator<String> categoryAccumulator, String s) {

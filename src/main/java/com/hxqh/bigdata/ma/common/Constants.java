@@ -2,6 +2,8 @@ package com.hxqh.bigdata.ma.common;
 
 /**
  * Created by Ocean lin on 2018/1/15.
+ *
+ * @author Lin
  */
 public interface Constants {
 
@@ -41,6 +43,10 @@ public interface Constants {
     String CATEGORY_THRILLER = "惊悚";
     String CATEGORY_CRIME = "犯罪";
     String CATEGORY_GUN_BATTLE = "枪战";
+
+
+    String HOST_SPARK3 = "spark3";
+    Integer ES_PORT = 9300;
 
 
 }
