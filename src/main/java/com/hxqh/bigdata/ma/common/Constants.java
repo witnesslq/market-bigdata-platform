@@ -47,6 +47,7 @@ public interface Constants {
 
     String HOST_SPARK3 = "spark3";
     Integer ES_PORT = 9300;
+    String ES_PORT_STRING = "9200";
 
 
 }

@@ -23,7 +23,7 @@ public class StudentsHive {
 
 
         spark.sql("select * from test_load limit 10").show();
-        spark.sql("select count(*) from test_load").show();
+        spark.sql("select count(*) from test_load_2").show();
 
     }
 }

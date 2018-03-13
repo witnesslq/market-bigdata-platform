@@ -219,10 +219,11 @@
             </exclusions>
             <version>6.1.2</version>
         </dependency>
+
         <dependency>
             <groupId>org.elasticsearch</groupId>
-            <artifactId>elasticsearch-spark_2.11</artifactId>
-            <version>5.0.0-alpha4</version>
+            <artifactId>elasticsearch-spark-20_2.11</artifactId>
+            <version>6.1.2</version>
         </dependency>
 
 
@@ -256,6 +257,13 @@
             <artifactId>log4j-api</artifactId>
             <version>2.10.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.janino</groupId>
+            <artifactId>commons-compiler</artifactId>
+            <version>2.7.8</version>
+        </dependency>
+
     </dependencies>
 
     <build>
