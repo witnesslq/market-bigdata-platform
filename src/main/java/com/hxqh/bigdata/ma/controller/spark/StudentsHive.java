@@ -18,9 +18,12 @@ public class StudentsHive {
                 .enableHiveSupport()
                 .getOrCreate();
 
-        spark.sql("select * from students").show();
-        spark.sql("select name from students where score>=90").show();
-        spark.sql("select name from students where age<=15").show();
+//        spark.sql("select * from students").show();
+//        spark.sql("select count(*) from students").show();
+
+
+        spark.sql("select * from test_load limit 10").show();
+        spark.sql("select count(*) from test_load").show();
 
     }
 }
