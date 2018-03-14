@@ -7,8 +7,6 @@ import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletCont
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author Ocean Lin
@@ -16,10 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 @SpringBootApplication
 @EnableAutoConfiguration
 @ComponentScan(basePackages = "com.hxqh.bigdata.ma.**.*")
-public class BigDataApplication extends SpringBootServletInitializer implements EmbeddedServletContainerCustomizer {
+public class MarketAnalysisBigDataApplication extends SpringBootServletInitializer implements EmbeddedServletContainerCustomizer {
 
     public static void main(String[] args) {
-        SpringApplication.run(BigDataApplication.class, args);
+        SpringApplication.run(MarketAnalysisBigDataApplication.class, args);
     }
 
     @Override
