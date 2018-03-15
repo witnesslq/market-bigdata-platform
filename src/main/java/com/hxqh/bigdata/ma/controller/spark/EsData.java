@@ -19,27 +19,17 @@ public class EsData {
 
     public static void main(String[] args) {
 
-        Logger.getLogger("org.apache.spark").setLevel(Level.ERROR);
-        Logger.getLogger("httpclient.wire").setLevel(Level.ERROR);
-        Logger.getLogger("org.apache").setLevel(Level.ERROR);
-        Logger.getLogger("org.elasticsearch").setLevel(Level.ERROR);
-        Logger.getLogger("org.spark_project.jetty.util.component").setLevel(Level.ERROR);
-
         SparkSession spark = SparkSession
                 .builder()
                 .master("local")
                 .appName("EsData")
                 .getOrCreate();
         spark.sparkContext().setLogLevel("ERROR");
-
         registerESTable(spark, "test");
-
         Dataset<Row> dataset = spark.sql("select * from test");
-//        Dataset<Row> dataset = spark.sql("select * from test limit 10");
 
         System.out.println(dataset);
         System.out.println(dataset.count());
-
     }
 
     /**
