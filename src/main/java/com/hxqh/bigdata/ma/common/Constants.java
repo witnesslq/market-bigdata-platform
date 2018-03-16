@@ -49,5 +49,6 @@ public interface Constants {
     Integer ES_PORT = 9300;
     String ES_PORT_STRING = "9200";
 
+    String FILM_SPLIT_LABEL = ",";
 
 }
