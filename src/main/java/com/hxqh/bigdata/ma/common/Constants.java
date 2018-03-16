@@ -50,5 +50,15 @@ public interface Constants {
     String ES_PORT_STRING = "9200";
 
     String FILM_SPLIT_LABEL = ",";
+    String FILM_SPLIT_SPACE = " ";
+
+
+    Integer FILM_OFFSET_ACTOR = 9;
+    Integer FILM_OFFSET_DIRECTOR = 3;
+    Integer FILM_OFFSET_TITLE = 4;
+    Integer FILM_OFFSET_PLAYNUM = 6;
+    Integer FILM_OFFSET_SCORE = 7;
+    Integer FILM_TOP_NUM = 30;
+
 
 }
