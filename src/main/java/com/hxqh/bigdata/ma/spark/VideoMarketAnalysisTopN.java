@@ -42,7 +42,7 @@ public class VideoMarketAnalysisTopN {
         Dataset df = sqlContext.read().format("org.elasticsearch.spark.sql").load("market_analysis/videos");
         JavaRDD<Row> rowJavaRDD = df.toJavaRDD();
 
-        // iqiyi^灵魂载体^崔航 苗诗钰 萨钢云 李未东 叶沛霖^吴焱晨^film^华语 惊悚 悬疑^6.7^298.0^73^2018-01-23^578000
+        // iqiyi^灵魂载体^崔航 苗诗钰 萨钢云 李未东 叶沛霖^吴焱晨^Film^华语 惊悚 悬疑^6.7^298.0^73^2018-01-23^578000
         JavaPairRDD<Long, String> longStringJavaPairRDD = rowJavaRDD.mapToPair(new PairFunction<Row, Long, String>() {
             @Override
             public Tuple2<Long, String> call(Row row) throws Exception {

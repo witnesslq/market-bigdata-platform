@@ -17,7 +17,7 @@ import java.rmi.UnknownHostException;
  * @author Ocean lin
  */
 @Configuration
-public class ESConfig {
+public class EsConfig {
     @Bean
     public TransportClient client() throws UnknownHostException {
 

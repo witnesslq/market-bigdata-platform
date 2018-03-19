@@ -2,14 +2,27 @@ package com.hxqh.bigdata.ma.controller.spark;
 
 import com.hxqh.bigdata.ma.common.Constants;
 import com.hxqh.bigdata.ma.conf.ConfigurationManager;
+import com.hxqh.bigdata.ma.domain.Film;
+import com.hxqh.bigdata.ma.util.DateUtils;
+import com.hxqh.bigdata.ma.util.ElasticSearchUtils;
 import com.hxqh.bigdata.ma.util.SparkUtil;
 import org.apache.spark.api.java.JavaPairRDD;
-import org.apache.spark.api.java.function.*;
+import org.apache.spark.api.java.function.Function;
+import org.apache.spark.api.java.function.Function2;
+import org.apache.spark.api.java.function.PairFlatMapFunction;
+import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import scala.Tuple2;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -30,10 +43,10 @@ public class MarketFilmSpark {
                 .appName("MarketFilmSpark")
                 .getOrCreate();
         registerESTable(spark, "film", "film_data", "film");
-        String startDate = "2018-03-14";
-        String endDate = "2018-03-15";
+        String startDate = DateUtils.getYesterdayDate();
+        String endDate = DateUtils.getTodayDate();
 
-        String sql = "select * from film  where addTime >='" + startDate + "' and addTime <= '" + endDate + "'";
+        String sql = "select * from Film  where addTime >='" + startDate + "' and addTime <= '" + endDate + "'";
         final Dataset<Row> film = spark.sql(sql);
 
 
@@ -48,40 +61,47 @@ public class MarketFilmSpark {
         // 缓存优化
         film.cache();
 
+        final TransportClient client = ElasticSearchUtils.getClient();
 
-        // 播放量Top10
-        List<Tuple2<Long, String>> top10Title = commonTop10(film, Constants.FILM_OFFSET_TITLE, Constants.FILM_OFFSET_PLAYNUM);
-        for (Tuple2<Long, String> tuple2 : top10Title) {
-            System.out.println(tuple2._1 + " : " + tuple2._2);
-        }
 
-        // 分类占比
-        JavaPairRDD<String, Long> stringLongJavaPairRDD = labelPie(film);
-        stringLongJavaPairRDD.foreach(new VoidFunction<Tuple2<String, Long>>() {
-            @Override
-            public void call(Tuple2<String, Long> tuple2) throws Exception {
-                System.out.println(tuple2._1 + " : " + tuple2._2);
-            }
-        });
+//        // 播放量Top10
+//        List<Tuple2<Long, String>> top10Title = commonTop10(film, Constants.FILM_OFFSET_TITLE, Constants.FILM_OFFSET_PLAYNUM);
+//        for (Tuple2<Long, String> tuple2 : top10Title) {
+//            Film f = new Film(new Date(), Double.valueOf(tuple2._1), tuple2._2);
+//            addFilm(f, client, Constants.FILM_PLAYNUM_INDEX, Constants.FILM_PLAYNUM_TYPE);
+//        }
 
-        // 电影评分Top10
-        List<Tuple2<Float, String>> top10TitleByScore =
-                commonFloatTop10(film, Constants.FILM_OFFSET_TITLE, Constants.FILM_OFFSET_SCORE);
-        for (Tuple2<Float, String> tuple2 : top10TitleByScore) {
-            System.out.println(tuple2._1 + " : " + tuple2._2);
-        }
 
-        //  出品公司Top10
-        List<Tuple2<Long, String>> top10RDD = companyPlayNum(film, baiduInfo);
-        for (Tuple2<Long, String> tuple2 : top10RDD) {
-            System.out.println(tuple2._1 + " : " + tuple2._2);
-        }
+//        // 分类占比
+//        JavaPairRDD<String, Long> stringLongJavaPairRDD = labelPie(film);
+//        List<Tuple2<String, Long>> collect = stringLongJavaPairRDD.collect();
+//        for (Tuple2<String, Long> tuple2 : collect) {
+//            Film f = new Film(new Date(), Double.valueOf(tuple2._2), tuple2._1);
+//            addFilm(f, client, Constants.FILM_LABEL_PIE_INDEX, Constants.FILM_LABEL_PIE_TYPE);
+//        }
+
+
+//        // 电影评分Top10
+//        List<Tuple2<Float, String>> top10TitleByScore =
+//                commonFloatTop10(film, Constants.FILM_OFFSET_TITLE, Constants.FILM_OFFSET_SCORE);
+//        for (Tuple2<Float, String> tuple2 : top10TitleByScore) {
+//            Film f = new Film(new Date(), Double.valueOf(tuple2._1), tuple2._2);
+//            addFilm(f, client, Constants.FILM_SCORE_NUM_INDEX, Constants.FILM_SCORE_NUM_TYPE);
+//        }
+
+//        //  出品公司Top10
+//        List<Tuple2<Long, String>> top10RDD = companyPlayNum(film, baiduInfo);
+//        for (Tuple2<Long, String> tuple2 : top10RDD) {
+//            Film f = new Film(new Date(), Double.valueOf(tuple2._1), tuple2._2);
+//            addFilm(f, client, Constants.FILM_COMPANY_INDEX, Constants.FILM_COMPANY_TYPE);
+//        }
 
 
         // 播放量最多演员Top10
         List<Tuple2<Long, String>> top10Actors = commonTop10(film, Constants.FILM_OFFSET_ACTOR, Constants.FILM_OFFSET_PLAYNUM);
         for (Tuple2<Long, String> tuple2 : top10Actors) {
-            System.out.println(tuple2._1 + " : " + tuple2._2);
+            Film f = new Film(new Date(), Double.valueOf(tuple2._1), tuple2._2);
+            addFilm(f, client, Constants.FILM_ACTOR_PLAYNUM_INDEX, Constants.FILM_ACTOR_PLAYNUM_TYPE);
         }
 
 
@@ -89,23 +109,44 @@ public class MarketFilmSpark {
         List<Tuple2<Float, String>> top10ActorsByScore =
                 commonFloatTop10(film, Constants.FILM_OFFSET_ACTOR, Constants.FILM_OFFSET_SCORE);
         for (Tuple2<Float, String> tuple2 : top10ActorsByScore) {
-            System.out.println(tuple2._1 + " : " + tuple2._2);
+            Film f = new Film(new Date(), Double.valueOf(tuple2._1), tuple2._2);
+            addFilm(f, client, Constants.FILM_ACTOR_SCORE_INDEX, Constants.FILM_ACTOR_SCORE_TYPE);
         }
+//
+//        // 播放量最多导演Top10
+//        List<Tuple2<Long, String>> top10Director = commonTop10(film, Constants.FILM_OFFSET_DIRECTOR, Constants.FILM_OFFSET_PLAYNUM);
+//        for (Tuple2<Long, String> tuple2 : top10Director) {
+//            Film f = new Film(new Date(), Double.valueOf(tuple2._1), tuple2._2);
+//            addFilm(f, client, Constants.FILM_DIRECTOR_PLAYNUM_INDEX, Constants.FILM_DIRECTOR_PLAYNUM_TYPE);
+//        }
 
-        // 播放量最多导演Top10
-        List<Tuple2<Long, String>> top10Director = commonTop10(film, Constants.FILM_OFFSET_DIRECTOR, Constants.FILM_OFFSET_PLAYNUM);
-        for (Tuple2<Long, String> tuple2 : top10Director) {
-            System.out.println(tuple2._1 + " : " + tuple2._2);
+//        // 评分最高导演Top10
+//        List<Tuple2<Float, String>> top10DirectorByScore =
+//                commonFloatTop10(film, Constants.FILM_OFFSET_DIRECTOR, Constants.FILM_OFFSET_SCORE);
+//        for (Tuple2<Float, String> tuple2 : top10DirectorByScore) {
+//            Film f = new Film(new Date(), Double.valueOf(tuple2._1), tuple2._2);
+//            addFilm(f, client, Constants.FILM_DIRECTOR_SCORE_INDEX, Constants.FILM_DIRECTOR_SCORE_TYPE);
+//        }
+
+
+    }
+
+
+    public static ResponseEntity addFilm(Film film, TransportClient client, String indexName, String typeName) {
+        try {
+            String todayTime = DateUtils.getTodayTime();
+            XContentBuilder content = XContentFactory.jsonBuilder().startObject().
+                    field("numvalue", film.getNumvalue()).
+                    field("name", film.getName()).
+                    field("addTime", todayTime).endObject();
+
+            IndexResponse result = client.prepareIndex(indexName, typeName).setSource(content).get();
+            System.out.println(film.getName() + " Persist to ES Success!");
+            return new ResponseEntity(result.getId(), HttpStatus.OK);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        // 评分最高导演Top10
-        List<Tuple2<Float, String>> top10DirectorByScore =
-                commonFloatTop10(film, Constants.FILM_OFFSET_DIRECTOR, Constants.FILM_OFFSET_SCORE);
-        for (Tuple2<Float, String> tuple2 : top10DirectorByScore) {
-            System.out.println(tuple2._1 + " : " + tuple2._2);
-        }
-
-
     }
 
 
@@ -115,7 +156,7 @@ public class MarketFilmSpark {
      * @return
      */
     private static List<Tuple2<Long, String>> companyPlayNum(Dataset<Row> film, Dataset<Row> baiduInfo) {
-        // [2018-03-14 01:00:21,film,155,成荫 王炎,南征北战（1974）,华语 战争 普通话,415000,0.0,iqiyi,张勇手 王尚信,58]
+        // [2018-03-14 01:00:21,Film,155,成荫 王炎,南征北战（1974）,华语 战争 普通话,415000,0.0,iqiyi,张勇手 王尚信,58]
         // 电影名称 播放量 聚合累加
         JavaPairRDD<String, Long> filmPairRDD = film.toJavaRDD().mapToPair(new PairFunction<Row, String, Long>() {
             @Override
@@ -168,7 +209,7 @@ public class MarketFilmSpark {
      * @return
      */
     private static List<Tuple2<Long, String>> commonTop10(Dataset<Row> film, final Integer offset, final Integer numOffset) {
-        // [2018-03-14 01:00:21,film,155,成荫 王炎,南征北战（1974）,华语 战争 普通话,415000,0.0,iqiyi,张勇手 王尚信,58]
+        // [2018-03-14 01:00:21,Film,155,成荫 王炎,南征北战（1974）,华语 战争 普通话,415000,0.0,iqiyi,张勇手 王尚信,58]
         // 过滤非空，形成<演员，播放量>,<导演，播放量>，flat展开
         JavaPairRDD<String, Long> javaPairRDD = film.toJavaRDD().filter(new Function<Row, Boolean>() {
             @Override
@@ -233,7 +274,7 @@ public class MarketFilmSpark {
      * @return
      */
     private static List<Tuple2<Float, String>> commonFloatTop10(Dataset<Row> film, final Integer offset, final Integer numOffset) {
-        // [2018-03-14 01:00:21,film,155,成荫 王炎,南征北战（1974）,华语 战争 普通话,415000,0.0,iqiyi,张勇手 王尚信,58]
+        // [2018-03-14 01:00:21,Film,155,成荫 王炎,南征北战（1974）,华语 战争 普通话,415000,0.0,iqiyi,张勇手 王尚信,58]
         // 过滤非空，形成<演员，播放量>,<导演，播放量>，flat展开
         JavaPairRDD<String, Float> javaPairRDD = film.toJavaRDD().filter(new Function<Row, Boolean>() {
             @Override
@@ -292,7 +333,7 @@ public class MarketFilmSpark {
      * @return
      */
     private static JavaPairRDD<String, Long> labelPie(Dataset<Row> film) {
-        // [2018-03-14 01:00:21,film,155,成荫 王炎,南征北战（1974）,华语 战争 普通话,415000,0.0,iqiyi,张勇手 王尚信,58]
+        // [2018-03-14 01:00:21,Film,155,成荫 王炎,南征北战（1974）,华语 战争 普通话,415000,0.0,iqiyi,张勇手 王尚信,58]
         JavaPairRDD<String, Long> pairRDD = film.toJavaRDD().flatMapToPair(new PairFlatMapFunction<Row, String, Long>() {
             @Override
             public Iterator<Tuple2<String, Long>> call(Row row) throws Exception {

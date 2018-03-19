@@ -58,7 +58,26 @@ public interface Constants {
     Integer FILM_OFFSET_TITLE = 4;
     Integer FILM_OFFSET_PLAYNUM = 6;
     Integer FILM_OFFSET_SCORE = 7;
-    Integer FILM_TOP_NUM = 30;
+    Integer FILM_TOP_NUM = 10;
+
+
+    String FILM_PLAYNUM_INDEX = "front_film_playnum";
+    String FILM_LABEL_PIE_INDEX = "front_film_label_pie";
+    String FILM_SCORE_NUM_INDEX = "front_film_tit1e_score";
+    String FILM_COMPANY_INDEX = "front_film_tit1e_company";
+    String FILM_ACTOR_PLAYNUM_INDEX = "front_film_actor_playnum";
+    String FILM_ACTOR_SCORE_INDEX = "front_film_actor_score";
+    String FILM_DIRECTOR_PLAYNUM_INDEX = "front_film_director_playnum";
+    String FILM_DIRECTOR_SCORE_INDEX = "front_film_director_score";
+
+    String FILM_PLAYNUM_TYPE = "film_playnum";
+    String FILM_LABEL_PIE_TYPE = "label_pie";
+    String FILM_SCORE_NUM_TYPE = "tit1e_score";
+    String FILM_COMPANY_TYPE = "tit1e_company";
+    String FILM_ACTOR_PLAYNUM_TYPE = "actor_playnum";
+    String FILM_ACTOR_SCORE_TYPE = "actor_score";
+    String FILM_DIRECTOR_PLAYNUM_TYPE = "director_playnum";
+    String FILM_DIRECTOR_SCORE_TYPE = "director_score";
 
 
 }

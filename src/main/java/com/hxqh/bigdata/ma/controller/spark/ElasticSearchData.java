@@ -1,13 +1,10 @@
 package com.hxqh.bigdata.ma.controller.spark;
 
-import com.hxqh.bigdata.ma.common.Constants;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import com.hxqh.bigdata.ma.util.SparkUtil;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -15,14 +12,14 @@ import java.util.Map;
  *
  * @author Ocean lin
  */
-public class EsData {
+public class ElasticSearchData {
 
     public static void main(String[] args) {
 
         SparkSession spark = SparkSession
                 .builder()
                 .master("local")
-                .appName("EsData")
+                .appName("ElasticSearchData")
                 .getOrCreate();
         spark.sparkContext().setLogLevel("ERROR");
         registerESTable(spark, "test");
@@ -39,16 +36,13 @@ public class EsData {
      * @param index
      */
     private static void registerESTable(SparkSession spark, String index) {
-        Map<String, String> esOptions = new HashMap<>(3);
-        esOptions.put("es.nodes", Constants.HOST_SPARK3);
-        esOptions.put("es.port", Constants.ES_PORT_STRING);
-        esOptions.put("es.mapping.date.rich", "false");
-        esOptions.put("es.index.auto.create", "true");
+        Map<String, String> esOptions = SparkUtil.initOption();
 
         Dataset<Row> dataset = spark.read().format("org.elasticsearch.spark.sql")
                 .options(esOptions)
                 .load("film_data" + "/" + "film");
         dataset.registerTempTable(index);
     }
+
 
 }
