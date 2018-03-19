@@ -39,7 +39,6 @@ public class MarketFilmSpark {
     public static void main(String[] args) {
         final SparkSession spark = SparkSession
                 .builder()
-                .master("local")
                 .appName("MarketFilmSpark")
                 .getOrCreate();
         registerESTable(spark, "film", "film_data", "film");

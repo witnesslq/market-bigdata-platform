@@ -18,7 +18,6 @@ public class ElasticSearchData {
 
         SparkSession spark = SparkSession
                 .builder()
-                .master("local")
                 .appName("ElasticSearchData")
                 .getOrCreate();
         spark.sparkContext().setLogLevel("ERROR");
