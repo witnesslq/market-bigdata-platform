@@ -62,38 +62,37 @@ public class MarketFilmSpark {
 
         final TransportClient client = ElasticSearchUtils.getClient();
 
-
-//        // 播放量Top10
-//        List<Tuple2<Long, String>> top10Title = commonTop10(film, Constants.FILM_OFFSET_TITLE, Constants.FILM_OFFSET_PLAYNUM);
-//        for (Tuple2<Long, String> tuple2 : top10Title) {
-//            Film f = new Film(new Date(), Double.valueOf(tuple2._1), tuple2._2);
-//            addFilm(f, client, Constants.FILM_PLAYNUM_INDEX, Constants.FILM_PLAYNUM_TYPE);
-//        }
-
-
-//        // 分类占比
-//        JavaPairRDD<String, Long> stringLongJavaPairRDD = labelPie(film);
-//        List<Tuple2<String, Long>> collect = stringLongJavaPairRDD.collect();
-//        for (Tuple2<String, Long> tuple2 : collect) {
-//            Film f = new Film(new Date(), Double.valueOf(tuple2._2), tuple2._1);
-//            addFilm(f, client, Constants.FILM_LABEL_PIE_INDEX, Constants.FILM_LABEL_PIE_TYPE);
-//        }
+        // 播放量Top10
+        List<Tuple2<Long, String>> top10Title = commonTop10(film, Constants.FILM_OFFSET_TITLE, Constants.FILM_OFFSET_PLAYNUM);
+        for (Tuple2<Long, String> tuple2 : top10Title) {
+            Film f = new Film(new Date(), Double.valueOf(tuple2._1), tuple2._2);
+            addFilm(f, client, Constants.FILM_PLAYNUM_INDEX, Constants.FILM_PLAYNUM_TYPE);
+        }
 
 
-//        // 电影评分Top10
-//        List<Tuple2<Float, String>> top10TitleByScore =
-//                commonFloatTop10(film, Constants.FILM_OFFSET_TITLE, Constants.FILM_OFFSET_SCORE);
-//        for (Tuple2<Float, String> tuple2 : top10TitleByScore) {
-//            Film f = new Film(new Date(), Double.valueOf(tuple2._1), tuple2._2);
-//            addFilm(f, client, Constants.FILM_SCORE_NUM_INDEX, Constants.FILM_SCORE_NUM_TYPE);
-//        }
+        // 分类占比
+        JavaPairRDD<String, Long> stringLongJavaPairRDD = labelPie(film);
+        List<Tuple2<String, Long>> collect = stringLongJavaPairRDD.collect();
+        for (Tuple2<String, Long> tuple2 : collect) {
+            Film f = new Film(new Date(), Double.valueOf(tuple2._2), tuple2._1);
+            addFilm(f, client, Constants.FILM_LABEL_PIE_INDEX, Constants.FILM_LABEL_PIE_TYPE);
+        }
 
-//        //  出品公司Top10
-//        List<Tuple2<Long, String>> top10RDD = companyPlayNum(film, baiduInfo);
-//        for (Tuple2<Long, String> tuple2 : top10RDD) {
-//            Film f = new Film(new Date(), Double.valueOf(tuple2._1), tuple2._2);
-//            addFilm(f, client, Constants.FILM_COMPANY_INDEX, Constants.FILM_COMPANY_TYPE);
-//        }
+
+        // 电影评分Top10
+        List<Tuple2<Float, String>> top10TitleByScore =
+                commonFloatTop10(film, Constants.FILM_OFFSET_TITLE, Constants.FILM_OFFSET_SCORE);
+        for (Tuple2<Float, String> tuple2 : top10TitleByScore) {
+            Film f = new Film(new Date(), Double.valueOf(tuple2._1), tuple2._2);
+            addFilm(f, client, Constants.FILM_SCORE_NUM_INDEX, Constants.FILM_SCORE_NUM_TYPE);
+        }
+
+        //  出品公司Top10
+        List<Tuple2<Long, String>> top10RDD = companyPlayNum(film, baiduInfo);
+        for (Tuple2<Long, String> tuple2 : top10RDD) {
+            Film f = new Film(new Date(), Double.valueOf(tuple2._1), tuple2._2);
+            addFilm(f, client, Constants.FILM_COMPANY_INDEX, Constants.FILM_COMPANY_TYPE);
+        }
 
 
         // 播放量最多演员Top10
@@ -111,21 +110,21 @@ public class MarketFilmSpark {
             Film f = new Film(new Date(), Double.valueOf(tuple2._1), tuple2._2);
             addFilm(f, client, Constants.FILM_ACTOR_SCORE_INDEX, Constants.FILM_ACTOR_SCORE_TYPE);
         }
-//
-//        // 播放量最多导演Top10
-//        List<Tuple2<Long, String>> top10Director = commonTop10(film, Constants.FILM_OFFSET_DIRECTOR, Constants.FILM_OFFSET_PLAYNUM);
-//        for (Tuple2<Long, String> tuple2 : top10Director) {
-//            Film f = new Film(new Date(), Double.valueOf(tuple2._1), tuple2._2);
-//            addFilm(f, client, Constants.FILM_DIRECTOR_PLAYNUM_INDEX, Constants.FILM_DIRECTOR_PLAYNUM_TYPE);
-//        }
 
-//        // 评分最高导演Top10
-//        List<Tuple2<Float, String>> top10DirectorByScore =
-//                commonFloatTop10(film, Constants.FILM_OFFSET_DIRECTOR, Constants.FILM_OFFSET_SCORE);
-//        for (Tuple2<Float, String> tuple2 : top10DirectorByScore) {
-//            Film f = new Film(new Date(), Double.valueOf(tuple2._1), tuple2._2);
-//            addFilm(f, client, Constants.FILM_DIRECTOR_SCORE_INDEX, Constants.FILM_DIRECTOR_SCORE_TYPE);
-//        }
+        // 播放量最多导演Top10
+        List<Tuple2<Long, String>> top10Director = commonTop10(film, Constants.FILM_OFFSET_DIRECTOR, Constants.FILM_OFFSET_PLAYNUM);
+        for (Tuple2<Long, String> tuple2 : top10Director) {
+            Film f = new Film(new Date(), Double.valueOf(tuple2._1), tuple2._2);
+            addFilm(f, client, Constants.FILM_DIRECTOR_PLAYNUM_INDEX, Constants.FILM_DIRECTOR_PLAYNUM_TYPE);
+        }
+
+        // 评分最高导演Top10
+        List<Tuple2<Float, String>> top10DirectorByScore =
+                commonFloatTop10(film, Constants.FILM_OFFSET_DIRECTOR, Constants.FILM_OFFSET_SCORE);
+        for (Tuple2<Float, String> tuple2 : top10DirectorByScore) {
+            Film f = new Film(new Date(), Double.valueOf(tuple2._1), tuple2._2);
+            addFilm(f, client, Constants.FILM_DIRECTOR_SCORE_INDEX, Constants.FILM_DIRECTOR_SCORE_TYPE);
+        }
 
 
     }
