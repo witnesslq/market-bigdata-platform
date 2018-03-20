@@ -45,7 +45,7 @@ public class MarketFilmSpark {
         String startDate = DateUtils.getYesterdayDate();
         String endDate = DateUtils.getTodayDate();
 
-        String sql = "select * from Film  where addTime >='" + startDate + "' and addTime <= '" + endDate + "'";
+        String sql = "select * from Film  where  category = 'film'  and addTime >='" + startDate + "' and addTime <= '" + endDate + "'";
         final Dataset<Row> film = spark.sql(sql);
 
 
@@ -61,6 +61,8 @@ public class MarketFilmSpark {
         film.cache();
 
         final TransportClient client = ElasticSearchUtils.getClient();
+
+//        System.out.println(film.count());
 
         // 播放量Top10
         List<Tuple2<Long, String>> top10Title = commonTop10(film, Constants.FILM_OFFSET_TITLE, Constants.FILM_OFFSET_PLAYNUM);
