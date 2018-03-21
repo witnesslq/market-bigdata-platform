@@ -80,4 +80,23 @@ public interface Constants {
     String FILM_DIRECTOR_SCORE_TYPE = "director_score";
 
 
+    /**
+     * soap
+     */
+    Integer SOAP_TOP_NUM = 10;
+
+    String SOAP_PLAYNUM_INDEX = "front_soap_playnum";
+    String SOAP_LABEL_PIE_INDEX = "front_soap_label_pie";
+    String SOAP_SCORE_TITLE_INDEX = "front_soap_score_title";
+    String SOAP_GUEST_INDEX = "front_soap_guest";
+    String SOAP_GUEST_COMMENT_INDEX = "front_soap_guest_comment";
+
+
+    String SOAP_PLAYNUM_TYPE = "soap_playnum";
+    String SOAP_LABEL_PIE_TYPE = "soap_label_pie";
+    String SOAP_SCORE_TITLE_TYPE = "soap_score_title";
+    String SOAP_GUEST_TYPE = "soap_guest";
+    String SOAP_GUEST_COMMENT_TYPE = "guest_comment";
+
+
 }

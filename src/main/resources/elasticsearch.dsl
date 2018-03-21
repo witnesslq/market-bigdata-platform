@@ -1,3 +1,4 @@
+============================================film===================================================================
 PUT /front_film_playnum
 PUT /front_film_playnum/_mapping/film_playnum
 {
@@ -136,3 +137,100 @@ PUT /front_film_director_score/_mapping/director_score
           }
         }
 }
+============================================film===================================================================
+
+============================================soap===================================================================
+PUT /front_soap_playnum
+PUT /front_soap_playnum/_mapping/soap_playnum
+{
+  "properties": {
+          "addTime": {
+            "type": "date",
+            "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+          },
+          "numvalue": {
+            "type": "double"
+          },
+          "name": {
+            "type": "keyword"
+          }
+        }
+}
+
+
+PUT /front_soap_label_pie
+PUT /front_soap_label_pie/_mapping/soap_label_pie
+{
+  "properties": {
+          "addTime": {
+            "type": "date",
+            "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+          },
+          "numvalue": {
+            "type": "double"
+          },
+          "name": {
+            "type": "keyword"
+          }
+        }
+}
+
+
+
+PUT /front_soap_score_title
+PUT /front_soap_score_title/_mapping/soap_score_title
+{
+  "properties": {
+          "addTime": {
+            "type": "date",
+            "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+          },
+          "numvalue": {
+            "type": "double"
+          },
+          "name": {
+            "type": "keyword"
+          }
+        }
+}
+
+
+PUT /front_soap_guest
+PUT /front_soap_guest/_mapping/soap_guest
+{
+  "properties": {
+          "addTime": {
+            "type": "date",
+            "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+          },
+          "numvalue": {
+            "type": "double"
+          },
+          "name": {
+            "type": "keyword"
+          }
+        }
+}
+
+
+
+PUT /front_soap_guest_comment
+PUT /front_soap_guest_comment/_mapping/guest_comment
+{
+  "properties": {
+          "addTime": {
+            "type": "date",
+            "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+          },
+          "numvalue": {
+            "type": "double"
+          },
+          "name": {
+            "type": "keyword"
+          }
+        }
+}
+
+
+
+============================================soap===================================================================
