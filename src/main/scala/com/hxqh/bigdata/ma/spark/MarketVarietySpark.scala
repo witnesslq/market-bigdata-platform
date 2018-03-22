@@ -52,6 +52,9 @@ object MarketVarietySpark {
     })
 
 
+
+
+
     // 播放量最多嘉宾Top10
     variety.distinct().filter(e => if (null == e.get(9)) false else true).flatMap(e => {
       val splits = e.getString(9).split(" ")

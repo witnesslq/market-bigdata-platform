@@ -119,4 +119,13 @@ public interface Constants {
      */
     Integer BOOK_TOP_NUM = 10;
 
+
+
+
+
+    /**
+     * literature
+     */
+    Integer LITERATURE_TOP_NUM = 10;
+
 }
