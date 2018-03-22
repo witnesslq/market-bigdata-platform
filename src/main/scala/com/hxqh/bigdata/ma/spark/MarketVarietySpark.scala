@@ -18,9 +18,7 @@ import org.elasticsearch.common.xcontent.XContentFactory
 object MarketVarietySpark {
 
   def main(args: Array[String]): Unit = {
-
-    //    val spark = SparkSession.builder.master("local").appName("MarketSoapSpark").getOrCreate
-    val spark = SparkSession.builder.appName("MarketSoapSpark").getOrCreate
+    val spark = SparkSession.builder.appName("MarketVarietySpark").getOrCreate
     registerESTable(spark, "film", "film_data", "film")
     val startDate = DateUtils.getYesterdayDate();
     val endDate = DateUtils.getTodayDate();
@@ -32,14 +30,12 @@ object MarketVarietySpark {
     val client = ElasticSearchUtils.getClient
 
     // [2018-03-20 10:45:36,variety,0,null,：医学泰斗寻找长寿秘诀 馒头白水竟是百岁老人的日常食谱,内地 其它,101000,0.0,iqiyi,刘婧,27]
-
-
-    //    // 播放量Top10
-    //    variety.distinct().map(e => (e.getInt(6), e.getString(4))).sortByKey(false).take(Constants.VARIETY_TOP_NUM)
-    //      .foreach(e => {
-    //        val variety = new Variety(e._1.toDouble, e._2)
-    //        addSoap(variety, client, Constants.VARIETY_PLAYNUM_INDEX, Constants.VARIETY_PLAYNUM_TYPE)
-    //      })
+    // 播放量Top10
+    variety.distinct().map(e => (e.getInt(6), e.getString(4))).sortByKey(false).take(Constants.VARIETY_TOP_NUM)
+      .foreach(e => {
+        val variety = new Variety(e._1.toDouble, e._2)
+        addSoap(variety, client, Constants.VARIETY_PLAYNUM_INDEX, Constants.VARIETY_PLAYNUM_TYPE)
+      })
 
 
     // 分类占比

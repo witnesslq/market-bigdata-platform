@@ -114,4 +114,9 @@ public interface Constants {
     String VARIETY_GUEST_PALYNUM_TYPE = "variety_guest_playnum";
 
 
+    /**
+     * soap
+     */
+    Integer BOOK_TOP_NUM = 10;
+
 }
