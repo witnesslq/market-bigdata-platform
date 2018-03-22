@@ -23,10 +23,8 @@ object MarketSoapSpark {
     //    val spark = SparkSession.builder.master("local").appName("MarketSoapSpark").getOrCreate
     val spark = SparkSession.builder.appName("MarketSoapSpark").getOrCreate
     registerESTable(spark, "film", "film_data", "film")
-    //        String startDate = DateUtils.getYesterdayDate();
-    //        String endDate = DateUtils.getTodayDate();
-    val startDate = "2018-03-21"
-    val endDate = "2018-03-22"
+    val startDate = DateUtils.getYesterdayDate();
+    val endDate = DateUtils.getTodayDate();
 
     val sql = "select * from Film  where  category = 'soap'  and addTime >='" + startDate + "' and addTime <= '" + endDate + "'"
     val soap = spark.sql(sql).rdd
@@ -98,7 +96,13 @@ object MarketSoapSpark {
     dataset.createOrReplaceTempView(tableName)
   }
 
-
+  /**
+    *
+    * @param soap      持久化的电视剧对象
+    * @param client    elasticsearch client
+    * @param indexName 索引名
+    * @param typeName  类型名
+    */
   def addSoap(soap: Soap, client: TransportClient, indexName: String, typeName: String): Unit = try {
     val todayTime = DateUtils.getTodayTime
     val content = XContentFactory.jsonBuilder.startObject.
@@ -106,7 +110,7 @@ object MarketSoapSpark {
       field("name", soap.name).
       field("addTime", todayTime).endObject
 
-    val result = client.prepareIndex(indexName, typeName).setSource(content).get
+    client.prepareIndex(indexName, typeName).setSource(content).get
     println(soap.name + " Persist to ES Success!")
   } catch {
     case e: IOException =>

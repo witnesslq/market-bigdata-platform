@@ -99,4 +99,19 @@ public interface Constants {
     String SOAP_GUEST_COMMENT_TYPE = "guest_comment";
 
 
+    /**
+     * variety
+     */
+    Integer VARIETY_TOP_NUM = 10;
+
+
+    String VARIETY_PLAYNUM_INDEX = "front_variety_playnum";
+    String VARIETY_LABEL_PIE_INDEX = "front_variety_label_pie";
+    String VARIETY_GUEST_PALYNUM_INDEX = "front_variety_guest_playnum";
+
+    String VARIETY_PLAYNUM_TYPE = "variety_playnum";
+    String VARIETY_LABEL_PIE_TYPE = "variety_label_pie";
+    String VARIETY_GUEST_PALYNUM_TYPE = "variety_guest_playnum";
+
+
 }

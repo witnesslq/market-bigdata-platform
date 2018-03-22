@@ -230,7 +230,64 @@ PUT /front_soap_guest_comment/_mapping/guest_comment
           }
         }
 }
-
-
-
 ============================================soap===================================================================
+
+
+============================================variety===================================================================
+PUT /front_variety_playnum
+PUT /front_variety_playnum/_mapping/variety_playnum
+{
+  "properties": {
+          "addTime": {
+            "type": "date",
+            "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+          },
+          "numvalue": {
+            "type": "double"
+          },
+          "name": {
+            "type": "keyword"
+          }
+        }
+}
+
+
+
+PUT /front_variety_label_pie
+PUT /front_variety_label_pie/_mapping/variety_label_pie
+{
+  "properties": {
+          "addTime": {
+            "type": "date",
+            "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+          },
+          "numvalue": {
+            "type": "double"
+          },
+          "name": {
+            "type": "keyword"
+          }
+        }
+}
+
+
+
+
+PUT /front_variety_guest_playnum
+PUT /front_variety_guest_playnum/_mapping/variety_guest_playnum
+{
+  "properties": {
+          "addTime": {
+            "type": "date",
+            "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+          },
+          "numvalue": {
+            "type": "double"
+          },
+          "name": {
+            "type": "keyword"
+          }
+        }
+}
+
+============================================variety===================================================================
