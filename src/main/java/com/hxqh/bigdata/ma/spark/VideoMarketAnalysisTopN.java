@@ -79,7 +79,6 @@ public class VideoMarketAnalysisTopN {
         for (Tuple2<Long, String> tuple2 : playNumTop) {
             System.out.println(tuple2._1 + ":" + tuple2._2);
         }
-        // todo 持久化及格式
         /***************************播放量排名*******************************/
 
 
@@ -97,7 +96,6 @@ public class VideoMarketAnalysisTopN {
 //        for (Tuple2<Long, String> tuple2 : commentNumTop) {
 //            System.out.println(tuple2._1 + ":" + tuple2._2);
 //        }
-        // todo 持久化及格式
         /***************************评论量排名*******************************/
 
 

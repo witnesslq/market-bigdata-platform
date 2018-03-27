@@ -23,6 +23,8 @@ object MarketBookSpark {
     val sql = "select * from book where addTime>='" + startDate + "' and addTime<= '" + endDate + "'"
     val variety = spark.sql(sql).rdd
     variety.cache
+    val client = ElasticSearchUtils.getClient
+
 
     // 2018-03-21 18:01:07,黄成明,数据化管理：洞悉零售及电子商务运营,计算机与互联网,计算机与互联网 电子商务 Broadview 数据化管理：洞悉零售及电子商务运营,6700,42.2,电子工业出版社,jd
 
@@ -47,7 +49,6 @@ object MarketBookSpark {
     // 豆瓣评分人数Top10
 
 
-    val client = ElasticSearchUtils.getClient
   }
 
   /**

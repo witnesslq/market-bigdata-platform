@@ -115,17 +115,31 @@ public interface Constants {
 
 
     /**
-     * soap
+     * book
      */
     Integer BOOK_TOP_NUM = 10;
-
-
-
 
 
     /**
      * literature
      */
     Integer LITERATURE_TOP_NUM = 10;
+
+
+    String LITERATURE_PLAYNUM_INDEX = "front_literature_title_clicknum";
+    String LITERATURE_LABEL_PIE_INDEX = "front_literature_label_pie";
+    String LITERATURE_LABEL_CLICKNUM_PIE_INDEX = "front_literature_label_clicknum_pie";
+    String LITERATURE_COMMENT_TITLE_INDEX = "front_literature_comment_title";
+    String LITERATURE_COMMENT_AUTHOR_INDEX = "front_literature_comment_author";
+    String LITERATURE_CLICKNUM_AUTHOR_INDEX = "front_literature_clicknum_author";
+
+
+    String LITERATURE_PLAYNUM_TYPE = "title_clicknum";
+    String LITERATURE_LABEL_PIE_TYPE = "label_pie";
+    String LITERATURE_LABEL_CLICKNUM_PIE_TYPE = "label_clicknum_pie";
+    String LITERATURE_COMMENT_TITLE_TYPE = "comment_title";
+    String LITERATURE_COMMENT_AUTHOR_TYPE = "comment_author";
+    String LITERATURE_CLICKNUM_AUTHOR_TYPE = "clicknum_author";
+
 
 }

@@ -291,3 +291,27 @@ PUT /front_variety_guest_playnum/_mapping/variety_guest_playnum
 }
 
 ============================================variety===================================================================
+
+
+============================================literature================================================================
+
+
+PUT /front_literature_title_clicknum
+PUT /front_literature_title_clicknum/_mapping/title_clicknum
+{
+  "properties": {
+          "addTime": {
+            "type": "date",
+            "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+          },
+          "numvalue": {
+            "type": "double"
+          },
+          "name": {
+            "type": "keyword"
+          }
+        }
+}
+
+
+============================================literature================================================================

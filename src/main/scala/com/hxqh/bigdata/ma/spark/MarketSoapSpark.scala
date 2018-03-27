@@ -56,9 +56,7 @@ object MarketSoapSpark {
 
 
     // 播放量最多嘉宾Top10
-    soap.distinct().filter(e => {
-      if (null == e.get(9)) false else true
-    }).flatMap(e => {
+    soap.distinct().filter(e => (null != e.get(9))).flatMap(e => {
       val splits = e.getString(9).split(" ")
       for (x <- 0 until splits.length - 1)
         yield (splits(x), e.getInt(6))
@@ -69,9 +67,7 @@ object MarketSoapSpark {
 
 
     // 评论量最高嘉宾Top10
-    soap.distinct().filter(e => {
-      if (null == e.get(9)) false else true
-    }).flatMap(e => {
+    soap.distinct().filter(e => (null != e.get(9))).flatMap(e => {
       val splits = e.getString(9).split(" ")
       for (x <- 0 until splits.length - 1)
         yield (splits(x), e.getInt(10))
