@@ -20,8 +20,7 @@ object MarketLiteratureSpark {
 
     val spark = SparkSession.builder.master("local").appName("MarketLiteratureSpark").getOrCreate
     EsUtils.registerESTable(spark, "literature", "market_literature", "literature")
-    // val startDate = DateUtils.getYesterdayDate();
-    val startDate = "2018-03-01";
+    val startDate = DateUtils.getYesterdayDate();
     val endDate = DateUtils.getTodayDate();
 
     val sql = "select * from literature where addTime>='" + startDate + "' and addTime<= '" + endDate + "'"
