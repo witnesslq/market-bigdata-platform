@@ -1,10 +1,14 @@
 package com.hxqh.bigdata.ma.spark
 
+import java.io.IOException
 import java.util
 
 import com.hxqh.bigdata.ma.common.Constants
+import com.hxqh.bigdata.ma.domain.Books
 import com.hxqh.bigdata.ma.util.{DateUtils, ElasticSearchUtils, SparkUtil}
 import org.apache.spark.sql.{Dataset, Row, SparkSession}
+import org.elasticsearch.client.transport.TransportClient
+import org.elasticsearch.common.xcontent.XContentFactory
 
 /**
   * Created by Ocean lin on 2018/3/22.
@@ -25,24 +29,28 @@ object MarketBookSpark {
     variety.cache
     val client = ElasticSearchUtils.getClient
 
-
     // 2018-03-21 18:01:07,黄成明,数据化管理：洞悉零售及电子商务运营,计算机与互联网,计算机与互联网 电子商务 Broadview 数据化管理：洞悉零售及电子商务运营,6700,42.2,电子工业出版社,jd
-
-
     // 累计评论量排名Top10
     variety.distinct().map(e => (e.getString(2), e.getLong(5))).reduceByKey(_ + _).map(e => (e._2, e._1)).
-      sortByKey(false).take(Constants.BOOK_TOP_NUM).foreach(println(_))
+      sortByKey(false).take(Constants.BOOK_TOP_NUM).foreach(e => {
+      addBook(new Books(e._1.toDouble, e._2, Constants.BOOKS_COMMENT), client, Constants.BOOKS_ANALYSIS_INDEX, Constants.BOOKS_ANALYSIS_TYPE)
+    })
 
     // 各类别占比情况
     variety.distinct().flatMap(e => {
       val splits = e.getString(4).split(" ")
       for (i <- 0 until splits.length)
         yield (splits(i), 1)
-    }).reduceByKey(_ + _).map(e => (e._2, e._1)).sortByKey(false).take(10).foreach(println(_))
+    }).reduceByKey(_ + _).map(e => (e._2, e._1)).sortByKey(false).filter(e => (e._1 > 10)).collect().foreach(e => {
+      addBook(new Books(e._1.toDouble, e._2, Constants.BOOKS_LABEL), client, Constants.BOOKS_ANALYSIS_INDEX, Constants.BOOKS_ANALYSIS_TYPE)
+    })
 
     // 累计评论量最多出版社排名Top10
-    variety.distinct().map(e => (e.getString(7), e.getLong(5))).reduceByKey(_ + _).map(e => (e._2, e._1)).
-      sortByKey(false).take(Constants.BOOK_TOP_NUM).foreach(println(_))
+    variety.distinct().map(e => (e.getString(8), e.getLong(5))).reduceByKey(_ + _).map(e => (e._2, e._1)).
+      sortByKey(false).take(Constants.BOOK_TOP_NUM).foreach(e => {
+      addBook(new Books(e._1.toDouble, e._2, Constants.BOOKS_PRESS), client, Constants.BOOKS_ANALYSIS_INDEX, Constants.BOOKS_ANALYSIS_TYPE)
+    })
+
 
     // todo
     // 豆瓣评分Top10
@@ -63,6 +71,28 @@ object MarketBookSpark {
     val esOptions: util.Map[String, String] = SparkUtil.initOption
     val dataset: Dataset[Row] = spark.read.format("org.elasticsearch.spark.sql").options(esOptions).load(indexName + "/" + typeName)
     dataset.createOrReplaceTempView(tableName)
+  }
+
+  /**
+    *
+    * @param book      持久化的电视剧对象
+    * @param client    elasticsearch client
+    * @param indexName 索引名
+    * @param typeName  类型名
+    */
+  def addBook(book: Books, client: TransportClient, indexName: String, typeName: String): Unit = try {
+    val todayTime = DateUtils.getTodayTime
+    val content = XContentFactory.jsonBuilder.startObject.
+      field("numvalue", book.numvalue).
+      field("name", book.name).
+      field("category", book.category).
+      field("addTime", todayTime).endObject
+
+    client.prepareIndex(indexName, typeName).setSource(content).get
+    println(book.name + " Persist to ES Success!")
+  } catch {
+    case e: IOException =>
+      e.printStackTrace()
   }
 
 }

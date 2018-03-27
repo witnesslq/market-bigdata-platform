@@ -119,6 +119,14 @@ public interface Constants {
      */
     Integer BOOK_TOP_NUM = 10;
 
+    String BOOKS_ANALYSIS_INDEX = "front_book_index";
+    String BOOKS_ANALYSIS_TYPE = "front_book_type";
+
+
+    String BOOKS_COMMENT = "books_comment";
+    String BOOKS_LABEL = "books_label";
+    String BOOKS_PRESS = "books_press";
+
 
     /**
      * literature

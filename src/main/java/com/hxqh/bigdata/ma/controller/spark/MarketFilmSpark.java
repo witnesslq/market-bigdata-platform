@@ -89,7 +89,7 @@ public class MarketFilmSpark {
             addFilm(f, client, Constants.FILM_SCORE_NUM_INDEX, Constants.FILM_SCORE_NUM_TYPE);
         }
 
-        //  出品公司Top10
+        // 出品公司Top10
         List<Tuple2<Long, String>> top10RDD = companyPlayNum(film, baiduInfo);
         for (Tuple2<Long, String> tuple2 : top10RDD) {
             Film f = new Film(new Date(), Double.valueOf(tuple2._1), tuple2._2);
