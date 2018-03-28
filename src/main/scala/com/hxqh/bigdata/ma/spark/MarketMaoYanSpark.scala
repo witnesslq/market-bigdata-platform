@@ -15,8 +15,6 @@ object MarketMaoYanSpark {
 
     val spark = SparkSession.builder.master("local").appName("MarketLiteratureSpark").getOrCreate
     EsUtils.registerESTable(spark, "maoyan", "maoyan", "film")
-    //    val startDate = DateUtils.getYesterdayDate();
-    //    val endDate = DateUtils.getTodayDate();
 
 
     val sql = "select * from maoyan where addTime = ( select max(addTime) from maoyan ) "

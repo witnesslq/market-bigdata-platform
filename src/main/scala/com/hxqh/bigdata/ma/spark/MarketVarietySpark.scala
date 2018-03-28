@@ -33,10 +33,9 @@ object MarketVarietySpark {
     // 播放量Top10
     variety.distinct().map(e => (e.getInt(6), e.getString(4))).sortByKey(false).take(Constants.VARIETY_TOP_NUM)
       .foreach(e => {
-        val variety = new Variety(e._1.toDouble, e._2)
-        addvariety(variety, client, Constants.VARIETY_PLAYNUM_INDEX, Constants.VARIETY_PLAYNUM_TYPE)
+        val variety = new Variety(e._1.toDouble, e._2, Constants.VARIETY_PLAYNUM)
+        addvariety(variety, client)
       })
-
 
     // 分类占比
     variety.distinct().filter(e => (e.getString(5) != null)).flatMap(e => {
@@ -44,13 +43,20 @@ object MarketVarietySpark {
       for (x <- 0 until splits.length - 1)
         yield (splits(x), 1)
     }).reduceByKey(_ + _).filter(e => e._2 > 10).collect().foreach(e => {
-      val variety = new Variety(e._2.toDouble, e._1)
-      addvariety(variety, client, Constants.VARIETY_LABEL_PIE_INDEX, Constants.VARIETY_LABEL_PIE_TYPE)
+      val variety = new Variety(e._2.toDouble, e._1, Constants.VARIETY_LABEL_PIE)
+      addvariety(variety, client)
     })
 
-
-
-
+    // 播放量前10的分类占比
+    variety.distinct().filter(e => (e.getString(5) != null)).flatMap(e => {
+      val splits = e.getString(5).split(" ")
+      for (x <- 0 until splits.length - 1)
+        yield (splits(x), e.getInt(6))
+    }).reduceByKey(_ + _).map(e => (e._2, e._1)).sortByKey(false).take(Constants.VARIETY_TOP_NUM)
+      .foreach(e => {
+        val variety = new Variety(e._1.toDouble, e._2, Constants.VARIETY_LABEL_PLAYNUM_PIE)
+        addvariety(variety, client)
+      })
 
     // 播放量最多嘉宾Top10
     variety.distinct().filter(e => (null != e.get(9))).flatMap(e => {
@@ -58,8 +64,8 @@ object MarketVarietySpark {
       for (x <- 0 until splits.length - 1)
         yield (splits(x), e.getInt(6))
     }).reduceByKey(_ + _).map(e => (e._2, e._1)).sortByKey(false).take(Constants.VARIETY_TOP_NUM).foreach(e => {
-      val variety = new Variety(e._1.toDouble, e._2)
-      addvariety(variety, client, Constants.VARIETY_GUEST_PALYNUM_INDEX, Constants.VARIETY_GUEST_PALYNUM_TYPE)
+      val variety = new Variety(e._1.toDouble, e._2, Constants.VARIETY_GUEST_PALYNUM)
+      addvariety(variety, client)
     })
 
 
@@ -82,19 +88,18 @@ object MarketVarietySpark {
 
   /**
     *
-    * @param variety   持久化的综艺节目对象
-    * @param client    elasticsearch client
-    * @param indexName 索引名
-    * @param typeName  类型名
+    * @param variety 持久化的综艺节目对象
+    * @param client  elasticsearch client
     */
-  def addvariety(variety: Variety, client: TransportClient, indexName: String, typeName: String): Unit = try {
+  def addvariety(variety: Variety, client: TransportClient): Unit = try {
     val todayTime = DateUtils.getTodayTime
     val content = XContentFactory.jsonBuilder.startObject.
       field("numvalue", variety.numvalue).
       field("name", variety.name).
+      field("category", variety.category).
       field("addTime", todayTime).endObject
 
-    client.prepareIndex(indexName, typeName).setSource(content).get
+    client.prepareIndex(Constants.FILM_INDEX, Constants.FILM_TYPE).setSource(content).get
     println(variety.name + " Persist to ES Success!")
   } catch {
     case e: IOException =>

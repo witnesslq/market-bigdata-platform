@@ -20,7 +20,7 @@ import org.elasticsearch.common.xcontent.XContentFactory
 object MarketSoapSpark {
 
   def main(args: Array[String]): Unit = {
-    val spark = SparkSession.builder.master("local").appName("MarketSoapSpark").getOrCreate
+    val spark = SparkSession.builder.appName("MarketSoapSpark").getOrCreate
     //    val spark = SparkSession.builder.appName("MarketSoapSpark").getOrCreate
     registerESTable(spark, "film", "film_data", "film")
     val startDate = DateUtils.getYesterdayDate();

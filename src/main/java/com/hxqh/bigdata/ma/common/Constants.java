@@ -95,13 +95,10 @@ public interface Constants {
     Integer VARIETY_TOP_NUM = 10;
 
 
-    String VARIETY_PLAYNUM_INDEX = "front_variety_playnum";
-    String VARIETY_LABEL_PIE_INDEX = "front_variety_label_pie";
-    String VARIETY_GUEST_PALYNUM_INDEX = "front_variety_guest_playnum";
-
-    String VARIETY_PLAYNUM_TYPE = "variety_playnum";
-    String VARIETY_LABEL_PIE_TYPE = "variety_label_pie";
-    String VARIETY_GUEST_PALYNUM_TYPE = "variety_guest_playnum";
+    String VARIETY_PLAYNUM = "variety_playnum";
+    String VARIETY_LABEL_PIE = "variety_label_pie";
+    String VARIETY_LABEL_PLAYNUM_PIE = "variety_playnum_label_pie";
+    String VARIETY_GUEST_PALYNUM = "variety_guest_playnum";
 
 
     /**
@@ -124,20 +121,12 @@ public interface Constants {
     Integer LITERATURE_TOP_NUM = 10;
 
 
-    String LITERATURE_PLAYNUM_INDEX = "front_literature_title_clicknum";
-    String LITERATURE_LABEL_PIE_INDEX = "front_literature_label_pie";
-    String LITERATURE_LABEL_CLICKNUM_PIE_INDEX = "front_literature_label_clicknum_pie";
-    String LITERATURE_COMMENT_TITLE_INDEX = "front_literature_comment_title";
-    String LITERATURE_COMMENT_AUTHOR_INDEX = "front_literature_comment_author";
-    String LITERATURE_CLICKNUM_AUTHOR_INDEX = "front_literature_clicknum_author";
-
-
-    String LITERATURE_PLAYNUM_TYPE = "title_clicknum";
-    String LITERATURE_LABEL_PIE_TYPE = "label_pie";
-    String LITERATURE_LABEL_CLICKNUM_PIE_TYPE = "label_clicknum_pie";
-    String LITERATURE_COMMENT_TITLE_TYPE = "comment_title";
-    String LITERATURE_COMMENT_AUTHOR_TYPE = "comment_author";
-    String LITERATURE_CLICKNUM_AUTHOR_TYPE = "clicknum_author";
+    String LITERATURE_PLAYNUM = "literature_title_clicknum";
+    String LITERATURE_LABEL_PIE = "literature_label_pie";
+    String LITERATURE_LABEL_CLICKNUM_PIE = "literature_label_clicknum_pie";
+    String LITERATURE_COMMENT_TITLE = "literature_comment_title";
+    String LITERATURE_COMMENT_AUTHOR = "literature_comment_author";
+    String LITERATURE_CLICKNUM_AUTHOR = "literature_clicknum_author";
 
 
 }
