@@ -69,6 +69,13 @@ object MarketLiteratureSpark {
     })
 
 
+    // 累计点击量最多作品排名Top10
+    literature.distinct().filter(e => (e.get(2) != null)).map(e => (e.getString(6), e.getLong(2))).reduceByKey(_ + _).
+      map(e => (e._2, e._1)).sortByKey(false).take(Constants.LITERATURE_TOP_NUM).foreach(e => {
+      addLiterature(new Literature(e._1.toDouble, e._2, Constants.LITERATURE_CLICKNUM_TITLE), client)
+    })
+
+
     // 累计点击量最多作者排名Top10
     literature.distinct().filter(e => (e.get(2) != null)).map(e => (e.getString(1), e.getLong(2))).reduceByKey(_ + _).
       map(e => (e._2, e._1)).sortByKey(false).take(Constants.LITERATURE_TOP_NUM).foreach(e => {
@@ -77,7 +84,6 @@ object MarketLiteratureSpark {
 
     // todo
     // 周度、月度各标签类别点击量变化曲线
-
 
   }
 
@@ -91,6 +97,7 @@ object MarketLiteratureSpark {
     val content = XContentFactory.jsonBuilder.startObject.
       field("numvalue", literature.numvalue).
       field("name", literature.name).
+      field("category", literature.category).
       field("addTime", todayTime).endObject
 
     client.prepareIndex(Constants.BOOKS_ANALYSIS_INDEX, Constants.BOOKS_ANALYSIS_TYPE).setSource(content).get
