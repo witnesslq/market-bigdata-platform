@@ -20,8 +20,8 @@ import org.elasticsearch.common.xcontent.XContentFactory
 object MarketSoapSpark {
 
   def main(args: Array[String]): Unit = {
-    //    val spark = SparkSession.builder.master("local").appName("MarketSoapSpark").getOrCreate
-    val spark = SparkSession.builder.appName("MarketSoapSpark").getOrCreate
+    val spark = SparkSession.builder.master("local").appName("MarketSoapSpark").getOrCreate
+    //    val spark = SparkSession.builder.appName("MarketSoapSpark").getOrCreate
     registerESTable(spark, "film", "film_data", "film")
     val startDate = DateUtils.getYesterdayDate();
     val endDate = DateUtils.getTodayDate();
@@ -35,46 +35,60 @@ object MarketSoapSpark {
     // 播放量Top10
     val titlePlayNum = soap.distinct().map(e => (e.getInt(6), e.get(4))).sortByKey(false).take(Constants.SOAP_TOP_NUM)
     titlePlayNum.foreach(e => {
-      val soap = new Soap(new Date(), e._1, e._2.toString)
-      addSoap(soap, client, Constants.SOAP_PLAYNUM_INDEX, Constants.SOAP_PLAYNUM_TYPE)
+      addSoap(new Soap(new Date(), e._1, e._2.toString, Constants.SOAP_PLAYNUM), client)
     })
 
     // 分类占比
     soap.distinct().flatMap(e => (e.getString(5).split(" "))).map((_, 1)).
       reduceByKey(_ + _).filter(e => (e._2 > 10)).collect().foreach(x => {
-      val soap = new Soap(new Date(), x._2.toDouble, x._1)
-      addSoap(soap, client, Constants.SOAP_LABEL_PIE_INDEX, Constants.SOAP_LABEL_PIE_TYPE)
+      addSoap(new Soap(new Date(), x._2.toDouble, x._1, Constants.SOAP_LABEL_PIE), client)
     })
-
 
     // 评论量Top10
     soap.distinct().map(e => ((e.getInt(10), e.getString(4)))).sortByKey(false).take(Constants.SOAP_TOP_NUM)
       .foreach(e => {
-        val soap = new Soap(new Date(), e._1.toDouble, e._2)
-        addSoap(soap, client, Constants.SOAP_SCORE_TITLE_INDEX, Constants.SOAP_SCORE_TITLE_TYPE)
+        addSoap(new Soap(new Date(), e._1.toDouble, e._2, Constants.SOAP_SCORE_TITLE), client)
       })
 
-
-    // 播放量最多嘉宾Top10
+    // 播放量最多演员Top10
     soap.distinct().filter(e => (null != e.get(9))).flatMap(e => {
       val splits = e.getString(9).split(" ")
       for (x <- 0 until splits.length - 1)
         yield (splits(x), e.getInt(6))
     }).reduceByKey(_ + _).map(e => (e._2, e._1)).sortByKey(false).take(Constants.SOAP_TOP_NUM).foreach(e => {
-      val soap = new Soap(new Date(), e._1.toDouble, e._2)
-      addSoap(soap, client, Constants.SOAP_GUEST_INDEX, Constants.SOAP_GUEST_TYPE)
+      addSoap(new Soap(new Date(), e._1.toDouble, e._2, Constants.SOAP_GUEST_PLAYNUM), client)
     })
 
-
-    // 评论量最高嘉宾Top10
+    // 评论量最高演员Top10
     soap.distinct().filter(e => (null != e.get(9))).flatMap(e => {
       val splits = e.getString(9).split(" ")
       for (x <- 0 until splits.length - 1)
         yield (splits(x), e.getInt(10))
     }).reduceByKey(_ + _).map(e => (e._2, e._1)).sortByKey(false).take(Constants.SOAP_TOP_NUM).foreach(e => {
-      val soap = new Soap(new Date(), e._1.toDouble, e._2)
-      addSoap(soap, client, Constants.SOAP_GUEST_COMMENT_INDEX, Constants.SOAP_GUEST_COMMENT_TYPE)
+      addSoap(new Soap(new Date(), e._1.toDouble, e._2, Constants.SOAP_GUEST_COMMENT), client)
     })
+
+    // 播放量最多导演Top10
+    soap.distinct().filter(e => (null != e.get(3))).flatMap(e => {
+      val splits = e.getString(3).split(" ")
+      for (x <- 0 until splits.length - 1)
+        yield (splits(x), e.getInt(6))
+    }).reduceByKey(_ + _).map(e => (e._2, e._1)).sortByKey(false).take(Constants.SOAP_TOP_NUM)
+      .foreach(e => {
+        addSoap(new Soap(new Date(), e._1.toDouble, e._2, Constants.SOAP_DIRECTOR_PLAYNUM), client)
+      })
+
+
+    // 评论量最多导演Top10
+    soap.distinct().filter(e => (null != e.get(3))).flatMap(e => {
+      val splits = e.getString(3).split(" ")
+      for (x <- 0 until splits.length - 1)
+        yield (splits(x), e.getInt(10))
+    }).reduceByKey(_ + _).map(e => (e._2, e._1)).sortByKey(false).take(Constants.SOAP_TOP_NUM)
+      .foreach(e => {
+        addSoap(new Soap(new Date(), e._1.toDouble, e._2, Constants.SOAP_DIRECTOR_COMMENT), client)
+      })
+
 
   }
 
@@ -94,19 +108,18 @@ object MarketSoapSpark {
 
   /**
     *
-    * @param soap      持久化的电视剧对象
-    * @param client    elasticsearch client
-    * @param indexName 索引名
-    * @param typeName  类型名
+    * @param soap   持久化的电视剧对象
+    * @param client elasticsearch client
     */
-  def addSoap(soap: Soap, client: TransportClient, indexName: String, typeName: String): Unit = try {
+  def addSoap(soap: Soap, client: TransportClient): Unit = try {
     val todayTime = DateUtils.getTodayTime
     val content = XContentFactory.jsonBuilder.startObject.
       field("numvalue", soap.numvalue).
       field("name", soap.name).
+      field("category", soap.category).
       field("addTime", todayTime).endObject
 
-    client.prepareIndex(indexName, typeName).setSource(content).get
+    client.prepareIndex(Constants.FILM_INDEX, Constants.FILM_TYPE).setSource(content).get
     println(soap.name + " Persist to ES Success!")
   } catch {
     case e: IOException =>

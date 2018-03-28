@@ -33,7 +33,7 @@ object MarketBookSpark {
     // 累计评论量排名Top10
     variety.distinct().map(e => (e.getString(2), e.getLong(5))).reduceByKey(_ + _).map(e => (e._2, e._1)).
       sortByKey(false).take(Constants.BOOK_TOP_NUM).foreach(e => {
-      addBook(new Books(e._1.toDouble, e._2, Constants.BOOKS_COMMENT), client, Constants.BOOKS_ANALYSIS_INDEX, Constants.BOOKS_ANALYSIS_TYPE)
+      addBook(new Books(e._1.toDouble, e._2, Constants.BOOKS_COMMENT), client)
     })
 
     // 各类别占比情况
@@ -42,13 +42,13 @@ object MarketBookSpark {
       for (i <- 0 until splits.length)
         yield (splits(i), 1)
     }).reduceByKey(_ + _).map(e => (e._2, e._1)).sortByKey(false).filter(e => (e._1 > 10)).collect().foreach(e => {
-      addBook(new Books(e._1.toDouble, e._2, Constants.BOOKS_LABEL), client, Constants.BOOKS_ANALYSIS_INDEX, Constants.BOOKS_ANALYSIS_TYPE)
+      addBook(new Books(e._1.toDouble, e._2, Constants.BOOKS_LABEL), client)
     })
 
     // 累计评论量最多出版社排名Top10
     variety.distinct().map(e => (e.getString(8), e.getLong(5))).reduceByKey(_ + _).map(e => (e._2, e._1)).
       sortByKey(false).take(Constants.BOOK_TOP_NUM).foreach(e => {
-      addBook(new Books(e._1.toDouble, e._2, Constants.BOOKS_PRESS), client, Constants.BOOKS_ANALYSIS_INDEX, Constants.BOOKS_ANALYSIS_TYPE)
+      addBook(new Books(e._1.toDouble, e._2, Constants.BOOKS_PRESS), client)
     })
 
 
@@ -75,12 +75,10 @@ object MarketBookSpark {
 
   /**
     *
-    * @param book      持久化的电视剧对象
-    * @param client    elasticsearch client
-    * @param indexName 索引名
-    * @param typeName  类型名
+    * @param book   持久化的电视剧对象
+    * @param client elasticsearch client
     */
-  def addBook(book: Books, client: TransportClient, indexName: String, typeName: String): Unit = try {
+  def addBook(book: Books, client: TransportClient): Unit = try {
     val todayTime = DateUtils.getTodayTime
     val content = XContentFactory.jsonBuilder.startObject.
       field("numvalue", book.numvalue).
@@ -88,7 +86,7 @@ object MarketBookSpark {
       field("category", book.category).
       field("addTime", todayTime).endObject
 
-    client.prepareIndex(indexName, typeName).setSource(content).get
+    client.prepareIndex(Constants.BOOKS_ANALYSIS_INDEX, Constants.BOOKS_ANALYSIS_TYPE).setSource(content).get
     println(book.name + " Persist to ES Success!")
   } catch {
     case e: IOException =>
