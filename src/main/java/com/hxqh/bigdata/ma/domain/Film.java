@@ -12,14 +12,16 @@ public class Film {
     private Date addTime;
     private Double numvalue;
     private String name;
+    private String category;
 
     public Film() {
     }
 
-    public Film(Date addTime, Double numvalue, String name) {
+    public Film(Date addTime, Double numvalue, String name, String category) {
         this.addTime = addTime;
         this.numvalue = numvalue;
         this.name = name;
+        this.category = category;
     }
 
     public Date getAddTime() {
@@ -44,5 +46,13 @@ public class Film {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }

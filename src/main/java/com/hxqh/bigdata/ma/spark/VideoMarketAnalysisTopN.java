@@ -35,10 +35,6 @@ public class VideoMarketAnalysisTopN {
         final JavaSparkContext sc = new JavaSparkContext(sparkConf);
         SQLContext sqlContext = new SQLContext(sc);
 
-//        String filePath = Constants.FILE_PATH + DateUtils.getTodayYear() +
-//                Constants.FILE_SPLIT + DateUtils.getTodayMonth() + Constants.FILE_SPLIT;
-//        JavaRDD<String> stringJavaRDD = sc.textFile();
-
         Dataset df = sqlContext.read().format("org.elasticsearch.spark.sql").load("market_analysis/videos");
         JavaRDD<Row> rowJavaRDD = df.toJavaRDD();
 

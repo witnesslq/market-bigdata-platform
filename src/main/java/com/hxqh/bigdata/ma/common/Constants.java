@@ -61,23 +61,18 @@ public interface Constants {
     Integer FILM_TOP_NUM = 10;
 
 
-    String FILM_PLAYNUM_INDEX = "front_film_playnum";
-    String FILM_LABEL_PIE_INDEX = "front_film_label_pie";
-    String FILM_SCORE_NUM_INDEX = "front_film_tit1e_score";
-    String FILM_COMPANY_INDEX = "front_film_tit1e_company";
-    String FILM_ACTOR_PLAYNUM_INDEX = "front_film_actor_playnum";
-    String FILM_ACTOR_SCORE_INDEX = "front_film_actor_score";
-    String FILM_DIRECTOR_PLAYNUM_INDEX = "front_film_director_playnum";
-    String FILM_DIRECTOR_SCORE_INDEX = "front_film_director_score";
+    String FILM_INDEX = "front_film";
+    String FILM_TYPE = "film";
 
-    String FILM_PLAYNUM_TYPE = "film_playnum";
-    String FILM_LABEL_PIE_TYPE = "label_pie";
-    String FILM_SCORE_NUM_TYPE = "tit1e_score";
-    String FILM_COMPANY_TYPE = "tit1e_company";
-    String FILM_ACTOR_PLAYNUM_TYPE = "actor_playnum";
-    String FILM_ACTOR_SCORE_TYPE = "actor_score";
-    String FILM_DIRECTOR_PLAYNUM_TYPE = "director_playnum";
-    String FILM_DIRECTOR_SCORE_TYPE = "director_score";
+
+    String FILM_PLAYNUM = "film_playnum";
+    String FILM_LABEL_PIE = "film_label_pie";
+    String FILM_SCORE_NUM = "film_tit1e_score";
+    String FILM_COMPANY = "film_tit1e_company";
+    String FILM_ACTOR_PLAYNUM = "film_actor_playnum";
+    String FILM_ACTOR_SCORE = "film_actor_score";
+    String FILM_DIRECTOR_PLAYNUM = "film_director_playnum";
+    String FILM_DIRECTOR_SCORE = "film_director_score";
 
 
     /**
