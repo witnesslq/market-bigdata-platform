@@ -130,4 +130,17 @@ public interface Constants {
     String LITERATURE_CLICKNUM_AUTHOR = "literature_clicknum_author";
 
 
+    /**
+     * movie_box
+     */
+    String MOVIE_SUM_SPLIT_BOX = "movie_sum_split_box";
+    String MOVIE_SUM_BOX = "movie_sum_box";
+    String MOVIE_REALTIME_SPLIT_BOX = "movie_realtime_split_box";
+    String MOVIE_REALTIME_BOX = "movie_realtime_box";
+    String MOVIE_SUM_BOX_PIE = "movie_sum_box_pie";
+    String MOVIE_REALTIME_BOX_PIE = "movie_realtime_box_pie";
+    String MOVIE_SHOWINFO = "movie_showInfo";
+    String MOVIE_SHOWINFO_PIE = "movie_showInfo_pie";
+
+
 }

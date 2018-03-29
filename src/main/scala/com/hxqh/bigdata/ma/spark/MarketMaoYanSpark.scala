@@ -1,8 +1,14 @@
 package com.hxqh.bigdata.ma.spark
 
+import java.io.IOException
+import java.util.Date
+
 import com.hxqh.bigdata.ma.common.Constants
-import com.hxqh.bigdata.ma.util.{ElasticSearchUtils, EsUtils}
+import com.hxqh.bigdata.ma.domain.Soap
+import com.hxqh.bigdata.ma.util.{DateUtils, ElasticSearchUtils, EsUtils}
 import org.apache.spark.sql.SparkSession
+import org.elasticsearch.client.transport.TransportClient
+import org.elasticsearch.common.xcontent.XContentFactory
 
 /**
   * Created by Ocean lin on 2018/3/27.
@@ -13,12 +19,10 @@ object MarketMaoYanSpark {
 
   def main(args: Array[String]): Unit = {
 
-    val spark = SparkSession.builder.master("local").appName("MarketLiteratureSpark").getOrCreate
+    val spark = SparkSession.builder.appName("MarketMaoYanSpark").getOrCreate
     EsUtils.registerESTable(spark, "maoyan", "maoyan", "film")
 
-
     val sql = "select * from maoyan where addTime = ( select max(addTime) from maoyan ) "
-
     val maoyan = spark.sql(sql).rdd
     maoyan.cache
     val client = ElasticSearchUtils.getClient
@@ -27,22 +31,56 @@ object MarketMaoYanSpark {
     // 新增时间、          累计分账票房 、  电影名称、 来源、上映时间、排片场次、累计综合票房、实时分账票房、实时综合票房
     // 2018-03-26 21:00:00,2977.35,环太平洋：雷霆再起,maoyan,上映4天,118940,2800.3,4.13,4.39
 
-    // 累计分账票房占比
-    maoyan.map(e => (e.getFloat(1), e.getString(2))).sortByKey(false).take(Constants.FILM_TOP_NUM).foreach(println(_))
+    // 累计分账票房Top10
+    maoyan.map(e => (e.getFloat(1), e.getString(2))).sortByKey(false).take(Constants.FILM_TOP_NUM)
+      .foreach(e => {
+        addSoap(new Soap(new Date(), e._1.toDouble, e._2, Constants.MOVIE_SUM_SPLIT_BOX), client)
+      })
 
-    // 累计综合票房占
-    maoyan.map(e => (e.getFloat(6), e.getString(2))).sortByKey(false).take(Constants.FILM_TOP_NUM).foreach(println(_))
+    // 累计综合票房Top10
+    maoyan.map(e => (e.getFloat(6), e.getString(2))).sortByKey(false).take(Constants.FILM_TOP_NUM)
+      .foreach(e => {
+        addSoap(new Soap(new Date(), e._1.toDouble, e._2, Constants.MOVIE_SUM_BOX), client)
+      })
+
+    // 实时分账票房Top10
+    maoyan.map(e => (e.getFloat(7), e.getString(2))).sortByKey(false).take(Constants.FILM_TOP_NUM)
+      .foreach(e => {
+        addSoap(new Soap(new Date(), e._1.toDouble, e._2, Constants.MOVIE_REALTIME_SPLIT_BOX), client)
+      })
+
+    // 实时综合票房Top10
+    maoyan.map(e => (e.getFloat(8), e.getString(2))).sortByKey(false).take(Constants.FILM_TOP_NUM)
+      .foreach(e => {
+        addSoap(new Soap(new Date(), e._1.toDouble, e._2, Constants.MOVIE_REALTIME_BOX), client)
+      })
 
 
-    // 实时分账票房
-    maoyan.map(e => (e.getFloat(7), e.getString(2))).sortByKey(false).take(Constants.FILM_TOP_NUM).foreach(println(_))
+    // 累计综合票房占比
+    maoyan.map(e => (e.getFloat(6), e.getString(2))).distinct().collect()
+      .foreach(e => {
+        addSoap(new Soap(new Date(), e._1.toDouble, e._2, Constants.MOVIE_SUM_BOX_PIE), client)
+      })
 
-    // 实时综合票房
-    maoyan.map(e => (e.getFloat(8), e.getString(2))).sortByKey(false).take(Constants.FILM_TOP_NUM).foreach(println(_))
+    // 实时综合票房占比
+    maoyan.map(e => (e.getFloat(8), e.getString(2))).distinct().collect()
+      .foreach(e => {
+        addSoap(new Soap(new Date(), e._1.toDouble, e._2, Constants.MOVIE_REALTIME_BOX_PIE), client)
+      })
+
+
+    // 排片场次Top10
+    maoyan.map(e => (e.getLong(5), e.getString(2))).sortByKey(false).take(Constants.FILM_TOP_NUM)
+      .foreach(e => {
+        addSoap(new Soap(new Date(), e._1.toDouble, e._2, Constants.MOVIE_SHOWINFO), client)
+      })
 
 
     // 排片场次占比
-    maoyan.map(e => (e.getLong(5), e.getString(2))).sortByKey(false).take(Constants.FILM_TOP_NUM).foreach(println(_))
+    maoyan.map(e => (e.getLong(5), e.getString(2))).sortByKey(false).collect()
+      .foreach(e => {
+        addSoap(new Soap(new Date(), e._1.toDouble, e._2, Constants.MOVIE_SHOWINFO_PIE), client)
+      })
 
 
     // todo
@@ -50,6 +88,27 @@ object MarketMaoYanSpark {
 
     // 各影片票房变化曲线
     // 各影片排片场次变化曲线
+
+
+    /**
+      *
+      * @param soap   持久化的电视剧对象
+      * @param client elasticsearch client
+      */
+    def addSoap(soap: Soap, client: TransportClient): Unit = try {
+      val todayTime = DateUtils.getTodayTime
+      val content = XContentFactory.jsonBuilder.startObject.
+        field("numvalue", soap.numvalue).
+        field("name", soap.name).
+        field("category", soap.category).
+        field("addTime", todayTime).endObject
+
+      client.prepareIndex(Constants.FILM_INDEX, Constants.FILM_TYPE).setSource(content).get
+      println(soap.name + " Persist to ES Success!")
+    } catch {
+      case e: IOException =>
+        e.printStackTrace()
+    }
 
 
   }
