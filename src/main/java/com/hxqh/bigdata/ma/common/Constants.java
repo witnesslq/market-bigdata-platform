@@ -120,14 +120,16 @@ public interface Constants {
      */
     Integer LITERATURE_TOP_NUM = 10;
 
-
     String LITERATURE_PLAYNUM = "literature_title_clicknum";
     String LITERATURE_LABEL_PIE = "literature_label_pie";
     String LITERATURE_LABEL_CLICKNUM_PIE = "literature_label_clicknum_pie";
     String LITERATURE_COMMENT_TITLE = "literature_comment_title";
     String LITERATURE_COMMENT_AUTHOR = "literature_comment_author";
-    String LITERATURE_CLICKNUM_TITLE = "literature_clicknum_title";
     String LITERATURE_CLICKNUM_AUTHOR = "literature_clicknum_author";
+
+    String LITERATURE_CLICKNUM_MAINCLASS= "literature_clicknum_mainclass";
+    String LITERATURE_CLICKNUM_SUBCLASS = "literature_clicknum_subclass";
+    String LITERATURE_SUBCLASS_PIE = "literature_subclass_pie";
 
 
     /**
