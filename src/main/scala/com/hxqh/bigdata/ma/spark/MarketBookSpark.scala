@@ -45,7 +45,7 @@ object MarketBookSpark {
     })
 
     // 累计评论量最多出版社排名Top10
-    variety.distinct().map(e => (e.getString(8), e.getLong(5))).reduceByKey(_ + _).map(e => (e._2, e._1)).
+    variety.distinct().map(e => (e.getString(7), e.getLong(5))).reduceByKey(_ + _).map(e => (e._2, e._1)).
       sortByKey(false).take(Constants.BOOK_TOP_NUM).foreach(e => {
       addBook(new Books(e._1.toDouble, e._2, Constants.BOOKS_PRESS), client)
     })

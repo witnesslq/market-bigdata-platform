@@ -74,11 +74,11 @@ object MarketLiteratureSpark {
       addLiterature(new Literature(e._1.toDouble, e._2, Constants.LITERATURE_CLICKNUM_AUTHOR), client)
     })
 
-    // mainclass 点击量排名占比
-    literature.distinct().filter(e => (e.get(2) != null)).map(e => (e.getString(6), e.getLong(2))).reduceByKey(_ + _).map(e => (e._2, e._1))
-      .sortByKey(false).take(15).foreach(e => {
-      addLiterature(new Literature(e._1.toDouble, e._2, Constants.LITERATURE_CLICKNUM_MAINCLASS), client)
-    })
+//    // mainclass 点击量排名占比
+//    literature.distinct().filter(e => (e.get(2) != null)).map(e => (e.getString(6), e.getLong(2))).reduceByKey(_ + _).map(e => (e._2, e._1))
+//      .sortByKey(false).take(15).foreach(e => {
+//      addLiterature(new Literature(e._1.toDouble, e._2, Constants.LITERATURE_CLICKNUM_MAINCLASS), client)
+//    })
 
     // subclass 点击量排名占比
     literature.distinct().filter(e => (e.get(2) != null)).map(e => (e.getString(9), e.getLong(2))).reduceByKey(_ + _).map(e => (e._2, e._1))

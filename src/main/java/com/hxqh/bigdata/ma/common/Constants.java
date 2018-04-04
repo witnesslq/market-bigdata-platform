@@ -127,7 +127,6 @@ public interface Constants {
     String LITERATURE_COMMENT_AUTHOR = "literature_comment_author";
     String LITERATURE_CLICKNUM_AUTHOR = "literature_clicknum_author";
 
-    String LITERATURE_CLICKNUM_MAINCLASS= "literature_clicknum_mainclass";
     String LITERATURE_CLICKNUM_SUBCLASS = "literature_clicknum_subclass";
     String LITERATURE_SUBCLASS_PIE = "literature_subclass_pie";
 
