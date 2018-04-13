@@ -1,12 +1,16 @@
 package com.hxqh.bigdata.ma.util;
 
 import com.hxqh.bigdata.ma.common.Constants;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.net.InetAddress;
+import java.util.Map;
 
 /**
  * Created by Ocean lin on 2018/3/19.
@@ -28,6 +32,22 @@ public class ElasticSearchUtils {
         } finally {
         }
         return client;
+    }
+
+    /**
+     * 获取ElasticSearch中的索引注册为表
+     *
+     * @param spark     SparkSession
+     * @param tableName 临时表名称
+     * @param indexName index名称
+     * @param typeName  type名称
+     */
+    public static void registerESTable(SparkSession spark, String tableName, String indexName, String typeName) {
+        Map<String, String> esOptions = SparkUtil.initOption();
+        Dataset<Row> dataset = spark.read().format("org.elasticsearch.spark.sql")
+                .options(esOptions)
+                .load(indexName + "/" + typeName);
+        dataset.registerTempTable(tableName);
     }
 
 }

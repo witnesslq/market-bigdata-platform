@@ -144,4 +144,52 @@ public interface Constants {
     String MOVIE_SHOWINFO_PIE = "movie_showInfo_pie";
 
 
+    /**
+     * 项目配置相关的常量
+     */
+    String SPARK_LOCAL = "spark.local";
+
+
+    /**
+     * 任务相关的常量
+     */
+    String PARAM_START_DATE = "startDate";
+    String PARAM_END_DATE = "endDate";
+    String PARAM_CATEGORY = "category";
+    String PARAM_TITLE = "title";
+
+
+
+    /**
+     * Web
+     */
+    Integer SUCCESS = 1;
+    Integer FAIL = 0;
+
+    String ADDSUCCESS = "Add Success!";
+    String ADDFAIL = "Add Fail!";
+
+
+    /**
+     * Task Status
+     */
+    String UNSUBMIT = "unsubmit";
+    String UNDO = "undo";
+    String RUNNING = "running";
+    String FINISH = "finish";
+    String TASKFAIL = "taskfail";
+
+
+    /**
+     * 数据库相关的常量
+     */
+    String JDBC_DRIVER = "jdbc.driver";
+    String JDBC_DATASOURCE_SIZE = "jdbc.datasource.size";
+    String JDBC_URL = "jdbc.url";
+    String JDBC_USER = "jdbc.user";
+    String JDBC_PASSWORD = "jdbc.password";
+    String JDBC_URL_PROD = "jdbc.url.product";
+    String JDBC_USER_PROD = "jdbc.user.product";
+    String JDBC_PASSWORD_PROD = "jdbc.password.product";
+
 }

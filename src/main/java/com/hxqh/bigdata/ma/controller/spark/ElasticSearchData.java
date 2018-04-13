@@ -1,5 +1,7 @@
 package com.hxqh.bigdata.ma.controller.spark;
 
+import com.hxqh.bigdata.ma.util.DateUtils;
+import com.hxqh.bigdata.ma.util.ElasticSearchUtils;
 import com.hxqh.bigdata.ma.util.SparkUtil;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -16,32 +18,21 @@ public class ElasticSearchData {
 
     public static void main(String[] args) {
 
-        SparkSession spark = SparkSession
+        final SparkSession spark = SparkSession
                 .builder()
-                .appName("ElasticSearchData")
+                .master("local")
+                .appName("MarketFilmSpark")
                 .getOrCreate();
-        spark.sparkContext().setLogLevel("ERROR");
-        registerESTable(spark, "test");
-        Dataset<Row> dataset = spark.sql("select * from test");
+        ElasticSearchUtils.registerESTable(spark, "film", "film_data", "film");
+        String startDate = "2018-03-27";
+        String endDate = DateUtils.getTodayDate();
 
-        System.out.println(dataset);
-        System.out.println(dataset.count());
+        String sql = "select * from Film  where  category = 'film'  and addTime >='" + startDate + "' and addTime <= '" + endDate + "'";
+        final Dataset<Row> film = spark.sql(sql);
+
+        System.out.println(film.count());
     }
 
-    /**
-     * 获取ElasticSearch中的索引注册为表
-     *
-     * @param spark
-     * @param index
-     */
-    private static void registerESTable(SparkSession spark, String index) {
-        Map<String, String> esOptions = SparkUtil.initOption();
-
-        Dataset<Row> dataset = spark.read().format("org.elasticsearch.spark.sql")
-                .options(esOptions)
-                .load("film_data" + "/" + "film");
-        dataset.registerTempTable(index);
-    }
 
 
 }

@@ -4,3 +4,4 @@ target/
 crawl/
 #*.properties
 spark-warehouse/
+logs/

@@ -24,19 +24,20 @@ object MarketBookSpark {
     val endDate = DateUtils.getTodayDate();
 
     val sql = "select * from book where addTime>='" + startDate + "' and addTime<= '" + endDate + "'"
-    val variety = spark.sql(sql).rdd
-    variety.cache
+    val book = spark.sql(sql).rdd
+    book.cache
     val client = ElasticSearchUtils.getClient
+
 
     // 2018-03-21 18:01:07,黄成明,数据化管理：洞悉零售及电子商务运营,计算机与互联网,计算机与互联网 电子商务 Broadview 数据化管理：洞悉零售及电子商务运营,6700,42.2,电子工业出版社,jd
     // 累计评论量排名Top10
-    variety.distinct().map(e => (e.getString(2), e.getLong(5))).reduceByKey(_ + _).map(e => (e._2, e._1)).
+    book.distinct().map(e => (e.getString(2), e.getLong(5))).reduceByKey(_ + _).map(e => (e._2, e._1)).
       sortByKey(false).take(Constants.BOOK_TOP_NUM).foreach(e => {
       addBook(new Books(e._1.toDouble, e._2, Constants.BOOKS_COMMENT), client)
     })
 
     // 各类别占比情况
-    variety.distinct().flatMap(e => {
+    book.distinct().flatMap(e => {
       val splits = e.getString(4).split(" ")
       for (i <- 0 until splits.length)
         yield (splits(i), 1)
@@ -45,7 +46,7 @@ object MarketBookSpark {
     })
 
     // 累计评论量最多出版社排名Top10
-    variety.distinct().map(e => (e.getString(7), e.getLong(5))).reduceByKey(_ + _).map(e => (e._2, e._1)).
+    book.distinct().map(e => (e.getString(7), e.getLong(5))).reduceByKey(_ + _).map(e => (e._2, e._1)).
       sortByKey(false).take(Constants.BOOK_TOP_NUM).foreach(e => {
       addBook(new Books(e._1.toDouble, e._2, Constants.BOOKS_PRESS), client)
     })
