@@ -153,11 +153,10 @@ public interface Constants {
     /**
      * 任务相关的常量
      */
-    String PARAM_START_DATE = "startDate";
-    String PARAM_END_DATE = "endDate";
+    String PARAM_START_DATE = "startTime";
+    String PARAM_END_DATE = "endTime";
     String PARAM_CATEGORY = "category";
     String PARAM_TITLE = "title";
-
 
 
     /**
@@ -191,5 +190,12 @@ public interface Constants {
     String JDBC_URL_PROD = "jdbc.url.product";
     String JDBC_USER_PROD = "jdbc.user.product";
     String JDBC_PASSWORD_PROD = "jdbc.password.product";
+
+
+    /**
+     * 交互式查询
+     */
+    String SEARCH_INDEX = "search_index";
+    String SEARCH_TYPE = "search_type";
 
 }

@@ -75,7 +75,7 @@ object MarketBookSpark {
 
   /**
     *
-    * @param book   持久化的电视剧对象
+    * @param book   持久化的book对象
     * @param client elasticsearch client
     */
   def addBook(book: Books, client: TransportClient): Unit = try {

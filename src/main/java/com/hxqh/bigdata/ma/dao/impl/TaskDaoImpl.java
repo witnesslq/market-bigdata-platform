@@ -4,6 +4,10 @@ import com.hxqh.bigdata.ma.conf.JDBCHelper;
 import com.hxqh.bigdata.ma.dao.TaskDao;
 import com.hxqh.bigdata.ma.model.Task;
 
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Ocean lin on 2018/4/13.
  *
@@ -17,4 +21,30 @@ public class TaskDaoImpl implements TaskDao {
         JDBCHelper jdbcHelper = JDBCHelper.getInstance();
         jdbcHelper.executeUpdate(sql, params);
     }
+
+
+    @Override
+    public List<Task> findAll() {
+        String sql = "SELECT taskid,task_param FROM task where task_status = 'undo' ";
+
+        final List<Task> taskList = new ArrayList<>();
+        JDBCHelper jdbcHelper = JDBCHelper.getInstance();
+        jdbcHelper.executeQuery(sql, null, new JDBCHelper.QueryCallback() {
+            @Override
+            public void process(ResultSet rs) throws Exception {
+                while (rs.next()) {
+                    long taskId = rs.getLong("taskid");
+                    String taskParam = rs.getString("task_param");
+                    Task task = new Task();
+                    task.setTaskid(taskId);
+                    task.setTaskParam(taskParam);
+                    taskList.add(task);
+                }
+            }
+
+        });
+
+        return taskList;
+    }
+
 }

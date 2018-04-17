@@ -129,7 +129,7 @@ public class JDBCHelper {
 
         try {
             conn = getConnection();
-            conn.setAutoCommit(false);
+//            conn.setAutoCommit(true);
             pstmt = conn.prepareStatement(sql);
             if (params != null && params.length > 0) {
                 for (int i = 0; i < params.length; i++) {
@@ -138,7 +138,7 @@ public class JDBCHelper {
             }
 
             rtn = pstmt.executeUpdate();
-            conn.commit();
+//            conn.commit();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

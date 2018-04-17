@@ -98,7 +98,7 @@ object MarketLiteratureSpark {
 
   /**
     *
-    * @param literature 持久化的电视剧对象
+    * @param literature 持久化的网络文学对象
     * @param client     elasticsearch client
     */
   def addLiterature(literature: Literature, client: TransportClient): Unit = try {
