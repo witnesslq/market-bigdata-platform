@@ -172,11 +172,13 @@ public interface Constants {
     /**
      * Task Status
      */
-    String UNSUBMIT = "unsubmit";
-    String UNDO = "undo";
-    String RUNNING = "running";
-    String FINISH = "finish";
-    String TASKFAIL = "taskfail";
+    String UNSUBMIT = "unsubmit";  // 未提交
+    String UNDO = "undo";          // 未执行
+    String RUNNING = "running";    // 运行中
+    String FINISH = "finish";      // 已完成
+    String TASKFAIL = "taskfail";  // 任务失败
+    String NODATA = "nodata";      // 无数据
+
 
 
     /**

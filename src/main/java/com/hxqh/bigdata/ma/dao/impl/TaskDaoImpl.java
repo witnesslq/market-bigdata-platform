@@ -6,6 +6,7 @@ import com.hxqh.bigdata.ma.model.Task;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,7 +27,6 @@ public class TaskDaoImpl implements TaskDao {
     @Override
     public List<Task> findAll() {
         String sql = "SELECT taskid,task_param FROM task where task_status = 'undo' ";
-
         final List<Task> taskList = new ArrayList<>();
         JDBCHelper jdbcHelper = JDBCHelper.getInstance();
         jdbcHelper.executeQuery(sql, null, new JDBCHelper.QueryCallback() {
@@ -43,8 +43,23 @@ public class TaskDaoImpl implements TaskDao {
             }
 
         });
-
         return taskList;
+    }
+
+    @Override
+    public void updateStartTime(Date date, Long taskid) {
+        String sql = "update task set  start_time =? where taskid=? ";
+        Object[] params = new Object[]{date, taskid};
+        JDBCHelper jdbcHelper = JDBCHelper.getInstance();
+        jdbcHelper.executeUpdate(sql, params);
+    }
+
+    @Override
+    public void updateFinishTime(Date date, Long taskid) {
+        String sql = "update task set  finish_time =? where taskid=? ";
+        Object[] params = new Object[]{date, taskid};
+        JDBCHelper jdbcHelper = JDBCHelper.getInstance();
+        jdbcHelper.executeUpdate(sql, params);
     }
 
 }

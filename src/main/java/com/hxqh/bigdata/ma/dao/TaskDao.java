@@ -2,6 +2,7 @@ package com.hxqh.bigdata.ma.dao;
 
 import com.hxqh.bigdata.ma.model.Task;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,5 +25,23 @@ public interface TaskDao {
      * @return TaskList
      */
     List<Task> findAll();
+
+
+    /**
+     * 更新起始时间
+     *
+     * @param date 起始时间
+     * @param taskid 任务编号
+     */
+    void updateStartTime(Date date, Long taskid);
+
+
+    /**
+     * 更新终止时间
+     *
+     * @param date 终止时间
+     * @param taskid 任务编号
+     */
+    void updateFinishTime(Date date, Long taskid);
 
 }
