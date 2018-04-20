@@ -86,7 +86,7 @@ object MarketInteractiveQuery extends Serializable {
             var label: String = null;
             filmRDD.foreach(e => {
               label = e.getString(2)
-              val show = new Show(e.getInt(0).toDouble, e.get(1).toString, "line", task.getTaskid)
+              val show = new Show(e.getInt(0).toDouble, e.get(1).toString, "line", task.getTaskid, "")
               addShow(show, client)
             })
 
@@ -113,7 +113,7 @@ object MarketInteractiveQuery extends Serializable {
 
             allPieRDD.foreach(e => {
               if (labelMap.contains(e._1)) {
-                val show = new Show(e._2.toDouble, e._1.toString, "pie", task.getTaskid)
+                val show = new Show(e._2.toDouble, null, "pie", task.getTaskid, e._1.toString)
                 addShow(show, client)
               }
             })
@@ -184,10 +184,11 @@ object MarketInteractiveQuery extends Serializable {
       field("timeLine", show.name).
       field("category", show.category).
       field("taskid", show.taskid).
+      field("filmName", show.filmName).
       field("addTime", todayTime).endObject
 
     client.prepareIndex(Constants.SEARCH_INDEX, Constants.SEARCH_TYPE).setSource(content).get
-    println(show.name + " Persist to ES Success!")
+    println(show.filmName + " Persist to ES Success!")
   } catch {
     case e: IOException =>
       e.printStackTrace()
