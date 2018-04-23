@@ -7,5 +7,8 @@ import java.util.Date
   *
   * @author Ocean lin
   */
-class Soap(var addTime: Date, var numvalue: Double, var name: String, var category: String) {
+class Soap(var addTime: Date,
+           var numvalue: Double,
+           var name: String,
+           var category: String) {
 }

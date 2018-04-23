@@ -5,5 +5,7 @@ package com.hxqh.bigdata.ma.domain
   *
   * @author Ocean lin
   */
-class Variety(var numvalue: Double, var name: String, var category: String) {
+class Variety(var numvalue: Double,
+              var name: String,
+              var category: String) {
 }

@@ -20,6 +20,13 @@ public interface TaskDao {
     void update(Task task);
 
     /**
+     * 更新task
+     *
+     * @param task task任务实体类及记录异常信息
+     */
+    void updateWithExceptiom(Task task);
+
+    /**
      * 查询所有Task
      *
      * @return TaskList

@@ -15,10 +15,19 @@ import java.util.List;
  * @author Ocean lin
  */
 public class TaskDaoImpl implements TaskDao {
+
     @Override
     public void update(Task task) {
         String sql = "update task set task_status =? where taskid=? ";
         Object[] params = new Object[]{task.getTaskStatus(), task.getTaskid()};
+        JDBCHelper jdbcHelper = JDBCHelper.getInstance();
+        jdbcHelper.executeUpdate(sql, params);
+    }
+
+    @Override
+    public void updateWithExceptiom(Task task) {
+        String sql = "update task set task_status=?,task_exception=? where taskid=? ";
+        Object[] params = new Object[]{task.getTaskStatus(), task.getTaskDesc(), task.getTaskid()};
         JDBCHelper jdbcHelper = JDBCHelper.getInstance();
         jdbcHelper.executeUpdate(sql, params);
     }

@@ -200,4 +200,5 @@ public interface Constants {
     String SEARCH_INDEX = "search_index";
     String SEARCH_TYPE = "search_type";
 
+    Long TEN_SECOND = 10000L;
 }

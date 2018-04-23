@@ -30,11 +30,10 @@ public class Task implements Serializable {
     private String taskStatus;
     private String taskParam;
     private String taskDesc;
+    private String taskException;
 
     public Task() {
     }
-
-
 
 
     public void setTaskid(Long taskid) {
@@ -115,5 +114,13 @@ public class Task implements Serializable {
 
     public void setTaskDesc(String taskDesc) {
         this.taskDesc = taskDesc;
+    }
+
+    public String getTaskException() {
+        return taskException;
+    }
+
+    public void setTaskException(String taskException) {
+        this.taskException = taskException;
     }
 }

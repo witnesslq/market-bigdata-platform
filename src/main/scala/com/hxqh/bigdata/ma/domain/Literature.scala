@@ -5,5 +5,7 @@ package com.hxqh.bigdata.ma.domain
   *
   * @author Ocean lin
   */
-class Literature(var numvalue: Double, var name: String, var category: String) {
+class Literature(var numvalue: Double,
+                 var name: String,
+                 var category: String) {
 }
