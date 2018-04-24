@@ -73,9 +73,7 @@ object MarketInteractiveQuery extends Serializable {
             analysisBook(client, spark, taskDao, task, startDate, endDate, category, title, indexName, typeName)
 
             // 网络文学
-            if (category.equals("literature")) {
-              // todo
-            }
+            analysisLiterature(client, spark, taskDao, task, startDate, endDate, category, title, indexName, typeName)
 
             // 猫眼
             if (category.equals("maoyan")) {
@@ -248,6 +246,69 @@ object MarketInteractiveQuery extends Serializable {
       } else {
         var label: String = null;
         bookRDD.foreach(e => {
+          label = e.getString(2)
+          val show = new Show(e.getLong(0).toDouble, e.get(1).toString, "line", task.getTaskid, "")
+          addShow(show, client)
+        })
+
+        // 计算占比
+        val labelMap = new mutable.HashMap[String, Int]()
+        val filmLabels = label.split(" ")
+        for (element <- filmLabels) {
+          labelMap.put(element, 1)
+        }
+
+        val sqlPie = startSQL + commonSQL
+        val filmPieRDD = spark.sql(sqlPie).rdd
+        val allPieRDD = filmPieRDD.filter(x => (null != x.get(2))).flatMap(e => {
+          val label = e.getString(2).split(" ")
+          for (i <- 0 until label.length)
+            yield (label(i), 1)
+        }).reduceByKey(_ + _).collect()
+
+        allPieRDD.foreach(e => {
+          if (labelMap.contains(e._1)) {
+            val show = new Show(e._2.toDouble, null, "pie", task.getTaskid, e._1.toString)
+            addShow(show, client)
+          }
+        })
+        // 更新状态 完成
+        persistStatus(task.getTaskid, Constants.FINISH, taskDao)
+      }
+    }
+  }
+
+  /**
+    * 网络文学交互式查询分析
+    *
+    * @param client    ElasticSearch连接客户端
+    * @param spark     SparkSession
+    * @param taskDao   任务Dao
+    * @param task      任务实体类
+    * @param startDate 起始时间
+    * @param endDate   终止时间
+    * @param category  类别
+    * @param title     分析作品名称
+    * @param indexName 索引名称
+    * @param typeName  索引类型
+    */
+  private def analysisLiterature(client: TransportClient, spark: SparkSession, taskDao: TaskDao, task: Task, startDate: String, endDate: String, category: String, title: String, indexName: String, typeName: String) = {
+    if (category.equals("literature")) {
+      EsUtils.registerESTable(spark, "literature", indexName, typeName)
+      val startSQL = "select clicknum,addtime,label from literature where"
+      val titleFilter = " name = '" + title + "' and"
+      val limitsSQL = " order by addtime desc limit 7"
+      val commonSQL = " addtime>='" + startDate + "' and addtime<= '" + endDate + "'"
+
+      val sql = startSQL + titleFilter + commonSQL + limitsSQL
+      val literature = spark.sql(sql)
+      // 写入ElasticSearch
+      val literatureRDD = literature.rdd.collect()
+      if (literatureRDD.size == 0) {
+        persistStatus(task.getTaskid, Constants.NODATA, taskDao)
+      } else {
+        var label: String = null;
+        literatureRDD.foreach(e => {
           label = e.getString(2)
           val show = new Show(e.getLong(0).toDouble, e.get(1).toString, "line", task.getTaskid, "")
           addShow(show, client)

@@ -151,6 +151,7 @@ public class MarketFilmSpark {
      * @param baiduInfo 百度电影出品公司RDD
      * @return
      */
+    // todo 对百度爬取出品公司数据组flatMap操作
     private static List<Tuple2<Long, String>> companyPlayNum(Dataset<Row> film, Dataset<Row> baiduInfo) {
         // [2018-03-14 01:00:21,Film,155,成荫 王炎,南征北战（1974）,华语 战争 普通话,415000,0.0,iqiyi,张勇手 王尚信,58]
         // 电影名称 播放量 聚合累加
