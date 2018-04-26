@@ -8,7 +8,6 @@ import com.hxqh.bigdata.ma.common.Constants
 import com.hxqh.bigdata.ma.dao.{DaoFactory, TaskDao}
 import com.hxqh.bigdata.ma.domain.Show
 import com.hxqh.bigdata.ma.model.Task
-import com.hxqh.bigdata.ma.spark.MarketInteractiveQuery.{persistStatus, persistStatusWithException}
 import com.hxqh.bigdata.ma.util.{DateUtils, ElasticSearchUtils, EsUtils}
 import org.apache.spark.sql.SparkSession
 import org.elasticsearch.client.transport.TransportClient
@@ -27,8 +26,8 @@ object MarketInteractiveQuery extends Serializable {
   def main(args: Array[String]): Unit = {
 
     val client = ElasticSearchUtils.getClient
-    val spark = SparkSession.builder.master("local").appName("MarketInteractiveQuery").getOrCreate
-    // val spark = SparkSession.builder.appName("MarketInteractiveQuery").getOrCreate
+    // val spark = SparkSession.builder.master("local").appName("MarketInteractiveQuery").getOrCreate
+    val spark = SparkSession.builder.appName("MarketInteractiveQuery").getOrCreate
 
     val indexMap = Map(
       "soap" -> "film_data/film",
@@ -65,7 +64,6 @@ object MarketInteractiveQuery extends Serializable {
           taskDao.updateStartTime(new Date(), task.getTaskid)
           try {
 
-
             // 电影、综艺、电视剧
             analysisFilmSoapVariety(client, spark, taskDao, task, startDate, endDate, category, title, indexName, typeName)
 
@@ -77,7 +75,36 @@ object MarketInteractiveQuery extends Serializable {
 
             // 猫眼
             if (category.equals("maoyan")) {
-              // todo
+              EsUtils.registerESTable(spark, "maoyan", indexName, typeName)
+
+              val sql = "select boxInfo,addTime from maoyan where filmName = '" + title + "' and  addtime>='" +
+                startDate + "' and addtime<= '" + endDate + "' order by addTime desc limit 7"
+              val maoyan = spark.sql(sql)
+              val maoyanRDD = maoyan.rdd.collect()
+              if (maoyanRDD.size == 0) {
+                persistStatus(task.getTaskid, Constants.NODATA, taskDao)
+              } else {
+                maoyanRDD.foreach(e => {
+                  val show = new Show(e.getFloat(0).toDouble, e.get(1).toString, "line", task.getTaskid, "")
+                  addShow(show, client)
+                })
+
+                // 计算占比
+                val sqlPie = "select filmName,boxInfo from maoyan where addtime>='" +
+                  startDate + "' and addtime<= '" + endDate + "' order by addTime desc limit 7"
+                val maoyanPieRDD = spark.sql(sqlPie).rdd
+                val allPieRDD = maoyanPieRDD.map(e => {
+                  (e.getString(0), e.getFloat(1))
+                }).reduceByKey(_ + _).collect()
+
+                allPieRDD.foreach(e => {
+                  val show = new Show(e._2.toDouble, null, "pie", task.getTaskid, e._1.toString)
+                  addShow(show, client)
+                })
+
+                // 更新状态 完成
+                persistStatus(task.getTaskid, Constants.FINISH, taskDao)
+              }
             }
 
           } catch {
@@ -171,7 +198,6 @@ object MarketInteractiveQuery extends Serializable {
 
       val sql = startSQL + categorySQL + titleFilter + commonSQL + limitsSQL
       val film = spark.sql(sql)
-      // 写入ElasticSearch
       val filmRDD = film.rdd.collect()
       if (filmRDD.size == 0) {
         persistStatus(task.getTaskid, Constants.NODATA, taskDao)
@@ -239,7 +265,6 @@ object MarketInteractiveQuery extends Serializable {
       val sql = startSQL + titleFilter + commonSQL + limitsSQL
       println(sql)
       val book = spark.sql(sql)
-      // 写入ElasticSearch
       val bookRDD = book.rdd.collect()
       if (bookRDD.size == 0) {
         persistStatus(task.getTaskid, Constants.NODATA, taskDao)
@@ -302,7 +327,6 @@ object MarketInteractiveQuery extends Serializable {
 
       val sql = startSQL + titleFilter + commonSQL + limitsSQL
       val literature = spark.sql(sql)
-      // 写入ElasticSearch
       val literatureRDD = literature.rdd.collect()
       if (literatureRDD.size == 0) {
         persistStatus(task.getTaskid, Constants.NODATA, taskDao)
