@@ -26,7 +26,7 @@ object MarketInteractiveQuery extends Serializable {
   def main(args: Array[String]): Unit = {
 
     val client = ElasticSearchUtils.getClient
-    // val spark = SparkSession.builder.master("local").appName("MarketInteractiveQuery").getOrCreate
+    //    val spark = SparkSession.builder.master("local").appName("MarketInteractiveQuery").getOrCreate
     val spark = SparkSession.builder.appName("MarketInteractiveQuery").getOrCreate
 
     val indexMap = Map(
@@ -221,7 +221,7 @@ object MarketInteractiveQuery extends Serializable {
 
         val sqlPie = startSQL + categorySQL + commonSQL
         val filmPieRDD = spark.sql(sqlPie).rdd
-        val allPieRDD = filmPieRDD.flatMap(e => {
+        val allPieRDD = filmPieRDD.filter(e => (e.get(2) != null)).flatMap(e => {
           var label = e.getString(2)
           if (label.contains(" "))
             label = label.replace(" ", ",")
