@@ -73,7 +73,7 @@ object MarketInteractiveQuery extends Serializable {
             // 网络文学
             analysisLiterature(client, spark, taskDao, task, startDate, endDate, category, title, indexName, typeName)
 
-            // 猫眼
+            // 猫眼 统计各电影票房占比，不同于图书评论量、电影电视剧综艺播放量、网路文学点击量
             if (category.equals("maoyan")) {
               EsUtils.registerESTable(spark, "maoyan", indexName, typeName)
 

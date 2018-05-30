@@ -29,8 +29,8 @@ object MarketBookSpark {
     val client = ElasticSearchUtils.getClient
 
 
-    // 2018-03-21 18:01:07,黄成明,数据化管理：洞悉零售及电子商务运营,计算机与互联网,计算机与互联网 电子商务 Broadview 数据化管理：洞悉零售及电子商务运营,6700,42.2,电子工业出版社,jd
-    // 累计评论量排名Top10
+    //  2018-03-21 18:01:07,黄成明,数据化管理：洞悉零售及电子商务运营,计算机与互联网,计算机与互联网 电子商务 Broadview 数据化管理：洞悉零售及电子商务运营,6700,42.2,电子工业出版社,jd
+    //  累计评论量排名Top10
     book.distinct().map(e => (e.getString(2), e.getLong(5))).reduceByKey(_ + _).map(e => (e._2, e._1)).
       sortByKey(false).take(Constants.BOOK_TOP_NUM).foreach(e => {
       addBook(new Books(e._1.toDouble, e._2, Constants.BOOKS_COMMENT), client)
@@ -38,10 +38,10 @@ object MarketBookSpark {
 
     // 各类别占比情况
     book.distinct().flatMap(e => {
-      val splits = e.getString(4).split(" ")
+      val splits = e.getString(4).replaceAll("/", " ").replaceAll(",", " ").split(" ")
       for (i <- 0 until splits.length)
         yield (splits(i), 1)
-    }).reduceByKey(_ + _).map(e => (e._2, e._1)).sortByKey(false).filter(e => (e._1 > 10)).collect().foreach(e => {
+    }).reduceByKey(_ + _).map(e => (e._2, e._1)).sortByKey(false).take(15).foreach(e => {
       addBook(new Books(e._1.toDouble, e._2, Constants.BOOKS_LABEL), client)
     })
 
